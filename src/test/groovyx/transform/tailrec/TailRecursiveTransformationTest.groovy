@@ -1,4 +1,4 @@
-package org.codehaus.groovy.transform.tailrec
+package groovyx.transform.tailrec
 
 
 import groovy.util.GroovyTestCase;
