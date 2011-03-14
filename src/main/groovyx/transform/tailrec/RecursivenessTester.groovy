@@ -46,6 +46,8 @@ class RecursivenessTester {
 	public boolean isRecursive(MethodNode method, StaticMethodCallExpression call) {
 		if (!method.isStatic())
 			return false
+		if (method.declaringClass != call.ownerType)
+			return false
 		if (call.method != method.name)
 			return false
 		methodParamsMatchCallArgs(method, call)

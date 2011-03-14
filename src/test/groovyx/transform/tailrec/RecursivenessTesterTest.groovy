@@ -212,7 +212,7 @@ class RecursivenessTesterTest {
 				}
 			}
 		}[0]
-		method.metaClass.classNode = ClassHelper.make("MyClass")
+		method.declaringClass = ClassHelper.make("MyClass")
 
 		/*
 		 myMethod("a");
@@ -239,8 +239,8 @@ class RecursivenessTesterTest {
 				}
 			}
 		}[0]
-		method.metaClass.classNode = ClassHelper.make("MyClass")
-
+		method.declaringClass = ClassHelper.make("MyClass")
+		
 		/*
 		 myMethod("a", "b");
 		 */
@@ -264,8 +264,8 @@ class RecursivenessTesterTest {
 				}
 			}
 		}[0]
-		method.metaClass.classNode = ClassHelper.make("MyClass")
-
+		method.declaringClass = ClassHelper.make("MyClass")
+		
 		/*
 		 myMethod();
 		 */
@@ -287,12 +287,35 @@ class RecursivenessTesterTest {
 				}
 			}
 		}[0]
-		method.metaClass.classNode = ClassHelper.make("MyClass")
-
+		method.declaringClass = ClassHelper.make("MyClass")
+		
 		/*
 		 yourMethod();
 		 */
 		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "yourMethod", new ArgumentListExpression())
+
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
+
+	@Test
+	public void staticCallOnDifferentClass() {
+		/*
+		 public static void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.declaringClass = ClassHelper.make("MyClass")
+		
+		/*
+		 OtherClass.myMethod();
+		 */
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("OtherClass"), "myMethod", new ArgumentListExpression())
 
 		assert !tester.isRecursive(method: method, call: innerCall)
 	}
