@@ -6,6 +6,7 @@ import static org.junit.Assert.*
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +36,7 @@ class RecursivenessTesterTest {
 		}[0]
 
 		/*
-		 myMethod();
+		 this.myMethod();
 		 */
 		def innerCall = new AstBuilder().buildFromSpec {
 			methodCall {
@@ -44,6 +45,28 @@ class RecursivenessTesterTest {
 				argumentList {}
 			}
 		}[0]
+
+		assert tester.isRecursive(method: method, call: innerCall)
+	}
+
+	@Test
+	public void recursiveVoidCallWithImplicitThis() throws Exception {
+		/*
+		 public void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+
+		/*
+		 myMethod();
+		 */
+		def innerCall = new MethodCallExpression(null, "myMethod", new ArgumentListExpression());
 
 		assert tester.isRecursive(method: method, call: innerCall)
 	}

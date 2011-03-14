@@ -14,12 +14,18 @@ class RecursivenessTester {
 	}
 
 	boolean isRecursive(MethodNode method, MethodCallExpression call) {
-		if (call.objectExpression.name != "this")
+		if (!isCallToThis(call))
 			return false
 		if (call.method.text != method.name)
 			return false
 
 		true
+	}
+
+	private boolean isCallToThis(MethodCallExpression call) {
+		if (call.objectExpression == null)
+			return call.isImplicitThis()
+		call.objectExpression.isThisExpression()
 	}
 
 	boolean isRecursive(MethodNode method, StaticMethodCallExpression call) {
