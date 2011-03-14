@@ -3,7 +3,10 @@ package groovyx.transform.tailrec
 import static net.sf.cglib.asm.Opcodes.*
 import static org.junit.Assert.*
 
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.builder.AstBuilder
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.junit.Before
 import org.junit.Test
 
@@ -86,19 +89,36 @@ class RecursivenessTesterTest {
 				}
 			}
 		}[0]
+		method.metaClass.classNode = ClassHelper.make("MyClass")
 
 		/*
 		 myMethod();
 		 */
-		def innerCall = new AstBuilder().buildFromSpec {
-           staticMethodCall(Math, "min") {
-                argumentList {
-                    constant 1
-                    constant 2
-                }
-            }
-		}[0]
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", new ArgumentListExpression())
 
 		assert !tester.isRecursive(method: method, call: innerCall)
+	}
+
+	@Test
+	public void staticRecursiveCall() {
+		/*
+		 public static void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.metaClass.classNode = ClassHelper.make("MyClass")
+
+		/*
+		 myMethod();
+		 */
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", new ArgumentListExpression())
+
+		assert tester.isRecursive(method: method, call: innerCall)
 	}
 }
