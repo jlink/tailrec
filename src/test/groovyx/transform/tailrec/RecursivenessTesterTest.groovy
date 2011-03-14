@@ -63,12 +63,40 @@ class RecursivenessTesterTest {
 		}[0]
 
 		/*
-		 myMethod();
+		 yourMethod();
 		 */
 		def innerCall = new AstBuilder().buildFromSpec {
 			methodCall {
 				variable "this"
 				constant "yourMethod"
+				argumentList {}
+			}
+		}[0]
+
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
+
+	@Test
+	public void callOnDifferentTarget() {
+		/*
+		 public void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+
+		/*
+		 other.myMethod();
+		 */
+		def innerCall = new AstBuilder().buildFromSpec {
+			methodCall {
+				variable "other"
+				constant "myMethod"
 				argumentList {}
 			}
 		}[0]
@@ -99,6 +127,29 @@ class RecursivenessTesterTest {
 		assert !tester.isRecursive(method: method, call: innerCall)
 	}
 
+	@Test
+	public void staticCallWithDifferentName() {
+		/*
+		 public static void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.metaClass.classNode = ClassHelper.make("MyClass")
+
+		/*
+		 yourMethod();
+		 */
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "yourMethod", new ArgumentListExpression())
+
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
+	
 	@Test
 	public void staticRecursiveCall() {
 		/*

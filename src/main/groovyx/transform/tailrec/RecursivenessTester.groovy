@@ -14,6 +14,8 @@ class RecursivenessTester {
 	}
 
 	boolean isRecursive(MethodNode method, MethodCallExpression call) {
+		if (call.objectExpression.name != "this")
+			return false
 		if (call.method.text != method.name)
 			return false
 
