@@ -198,11 +198,6 @@ class RecursivenessTesterTest {
 	}
 
 	@Test
-	public void recursiveCallUsingDefaultArgs() {
-		fail()	
-	}
-	
-	@Test
 	public void staticRecursiveCallWithParameter() {
 		/*
 		 public static void myMethod(String a) {}

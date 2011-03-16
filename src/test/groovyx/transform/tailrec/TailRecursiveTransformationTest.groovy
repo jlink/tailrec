@@ -30,4 +30,30 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 		assert target.aFunction() == 42
 		assert target.aStaticFunction() == 43
 	}
+
+	void testThrowExceptionIfNotAllRecursiveCallsCanBeTransformed() {
+		shouldFail(RuntimeException) { evaluate("""
+            import groovyx.transform.TailRecursive
+            class TargetClass {
+            	@TailRecursive
+            	int aNonTailRecursiveMethod() {
+            		return 1 + aNonTailRecursiveMethod() 
+            	}
+            }
+        """)
+		}
+	}
+
+	void testThrowExceptionIfNotAllStaticRecursiveCallsCanBeTransformed() {
+		shouldFail(RuntimeException) { evaluate("""
+            import groovyx.transform.TailRecursive
+            class TargetClass {
+            	@TailRecursive
+            	static int aNonTailRecursiveMethod() {
+            		return 1 + aNonTailRecursiveMethod() 
+            	}
+            }
+        """)
+		}
+	}
 }
