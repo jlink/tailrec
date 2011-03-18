@@ -31,13 +31,29 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 			return;
 		}
 		println(transformationDescription(method) + ": transform recursive calls to iteration.")
-		transformRecursiveCalls(method)
+		transformToIteration(method)
 		checkAllRecursiveCallsHaveBeenTransformed(method)
 	}
 
-	void transformRecursiveCalls(MethodNode method) {
+	void transformToIteration(MethodNode method) {
+		if (method.isVoidMethod()) {
+			transformVoidMethodToIteration(method)
+		} else {
+			transformNonVoidMethodToIteration(method)
+		}
+	}
+	
+	private void transformVoidMethodToIteration(MethodNode method) {
 		//todo
 	}
+	
+	private void transformNonVoidMethodToIteration(MethodNode method) {
+		fillInMissingReturns(node)
+	}
+	
+	private void fillInMissingReturns(MethodNode node) {
+		new ReturnStatementFiller().fill(method)
+	} 
 	
 	void checkAllRecursiveCallsHaveBeenTransformed(MethodNode method) {
 		if (hasRecursiveMethodCalls(method)) {
