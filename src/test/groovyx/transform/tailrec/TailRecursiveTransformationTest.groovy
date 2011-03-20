@@ -40,8 +40,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
             		return 1 + aNonTailRecursiveMethod() 
             	}
             }
-        """)
-		}
+        """) }
 	}
 
 	void testThrowExceptionIfNotAllStaticRecursiveCallsCanBeTransformed() {
@@ -53,11 +52,10 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
             		return 1 + aNonTailRecursiveMethod() 
             	}
             }
-        """)
-		}
+        """) }
 	}
-	
-	void _testSimpleRecursiveMethod() {
+
+	void testSimpleRecursiveMethod() {
 		def target = evaluate("""
             import groovyx.transform.TailRecursive
             class TargetClass {
@@ -65,12 +63,11 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
             	int countDown(int zahl) {
             		if (zahl == 0)
             			return zahl
-            		countDown(zahl - 1)
+            		return countDown(zahl - 1)
             	}
             }
             new TargetClass()
         """)
 		assert target.countDown(5) == 0
 	}
-
 }

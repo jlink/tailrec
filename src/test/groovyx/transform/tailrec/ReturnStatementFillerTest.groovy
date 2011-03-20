@@ -43,7 +43,7 @@ class ReturnStatementFillerTest {
 			}
 		}[0]
 		transformer.fill(method)
-		assert (method.code.statements[-1] instanceof ReturnStatement)
+		assert (method.code.statements[-1] == ReturnStatement.RETURN_NULL_OR_VOID)
 	}
 
 	@Test
@@ -52,7 +52,8 @@ class ReturnStatementFillerTest {
 			method('myMethod', ACC_PUBLIC, int.class) {
 				parameters {}
 				exceptions {}
-				block {  expression { constant 4 } }
+				block {  expression { constant 4
+					} }
 			}
 		}[0];
 

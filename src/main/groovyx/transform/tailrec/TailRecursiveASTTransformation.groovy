@@ -42,32 +42,42 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 			transformNonVoidMethodToIteration(method)
 		}
 	}
-	
+
 	private void transformVoidMethodToIteration(MethodNode method) {
 		//todo
+		throwException(method: method, message: "void methods are not supported yet!")
 	}
-	
+
 	private void transformNonVoidMethodToIteration(MethodNode method) {
-		fillInMissingReturns(node)
+		fillInMissingReturns(method)
+		//		wrapBodyWithWhileLoop(method)
+		//		Map nameMapping, positionMapping
+		//		(nameMapping, positionMapping) = findAllParameterMappings(method)
+		//		replaceAllAccessToParams(method, nameMapping)
+		//		addLocalVariablesForAllParameters(method, nameMapping)
+		//		replaceAllRecursiveReturnsWithVariableAssignment(method, positionMapping)
+
 	}
-	
-	private void fillInMissingReturns(MethodNode node) {
+
+	private void fillInMissingReturns(MethodNode method) {
 		new ReturnStatementFiller().fill(method)
-	} 
-	
-	void checkAllRecursiveCallsHaveBeenTransformed(MethodNode method) {
+	}
+
+	private void checkAllRecursiveCallsHaveBeenTransformed(MethodNode method) {
 		if (hasRecursiveMethodCalls(method)) {
-			throw new RuntimeException(transformationDescription(method) + ": not all recursive calls could be transformed!")
+			throwException(method: method, message: "not all recursive calls could be transformed!")
 		}
 	}
-	
-	def transformationDescription(MethodNode method) {
+
+	private throwException(Map params) {
+		throw new RuntimeException(transformationDescription(params.method) + ": ${params.message}")
+	}
+
+	private def transformationDescription(MethodNode method) {
 		"$MY_TYPE_NAME transformation on '${method.declaringClass}.${method.name}(${method.parameters.size()} params)'"
 	}
 
-	boolean hasRecursiveMethodCalls(MethodNode method) {
+	private boolean hasRecursiveMethodCalls(MethodNode method) {
 		hasRecursiveCalls.test(method)
 	}
-
-		
 }
