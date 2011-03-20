@@ -1,0 +1,6 @@
+TODO:
+- replace returns with iteration
+- fill in returns for if-then-else, switch, etc
+- handle recursive calls in some expressions like ternary operator
+- The whole void method branch
+ 
