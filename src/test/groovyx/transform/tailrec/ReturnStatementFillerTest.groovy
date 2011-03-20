@@ -16,7 +16,7 @@ class ReturnStatementFillerTest {
 	@Test
 	public void addReturnStatementToEmptyMethod() {
 		def method = new AstBuilder().buildFromSpec {
-			method('myMethod', ACC_PUBLIC, int.class) {
+			method('myMethod', ACC_PUBLIC, Object.class) {
 				parameters {}
 				exceptions {}
 				block {
@@ -30,7 +30,7 @@ class ReturnStatementFillerTest {
 	@Test
 	public void addReturnStatementIfLastExpressionIsWhileStatement() {
 		def method = new AstBuilder().buildFromSpec {
-			method('myMethod', ACC_PUBLIC, int.class) {
+			method('myMethod', ACC_PUBLIC, Object.class) {
 				parameters {}
 				exceptions {}
 				block {
@@ -52,8 +52,7 @@ class ReturnStatementFillerTest {
 			method('myMethod', ACC_PUBLIC, int.class) {
 				parameters {}
 				exceptions {}
-				block {  expression { constant 4
-					} }
+				block {  expression { constant 4 } }
 			}
 		}[0];
 
