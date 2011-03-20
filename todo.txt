@@ -1,5 +1,11 @@
 TODO:
-- replace returns with iteration
+- remaining steps for non-void transformations
+	* wrap body with while
+	* findAllParameterMappings(method)
+	* replaceAllAccessToParams(method, nameMapping)
+	* addLocalVariablesForAllParameters(method, nameMapping)
+	* replaceAllRecursiveReturnsWithVariableAssignment(method, positionMapping)
+	
 - fill in returns for if-then-else, switch, etc
 - handle recursive calls in some expressions like ternary operator
 - The whole void method branch
