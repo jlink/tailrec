@@ -17,6 +17,7 @@ class ReturnStatementFillerTest {
 	public void addReturnStatementToEmptyMethod() {
 		def method = new AstBuilder().buildFromSpec {
 			method('myMethod', ACC_PUBLIC, Object.class) {
+				parameters {}
 				exceptions {}
 				block {
 				}
