@@ -14,25 +14,14 @@ class InWhileLoopWrapperTest {
 
 	@Test
 	public void wrapWholeMethodBody() throws Exception {
-		MethodNode method = createMethod()
-		wrapper.wrap(method)
-		MethodNode expected = createIdenticalMethodWithBodyInWhileLoop()
-		AstAssert.assertSyntaxTree([expected], [method])
-	}
-
-	private createMethod() {
-		def method = new AstBuilder().buildFromSpec {
+		MethodNode methodToWrap = new AstBuilder().buildFromSpec {
 			method('myMethod', ACC_PUBLIC, int.class) {
 				parameters {}
 				exceptions {}
 				block { returnStatement{ constant 2 } }
 			}
-		}[0]
-		return method
-	}
-
-	private createIdenticalMethodWithBodyInWhileLoop() {
-		def method = new AstBuilder().buildFromSpec {
+		}
+		MethodNode expectedWrap = new AstBuilder().buildFromSpec {
 			method('myMethod', ACC_PUBLIC, int.class) {
 				parameters {}
 				exceptions {}
@@ -43,7 +32,8 @@ class InWhileLoopWrapperTest {
 					}
 				}
 			}
-		}[0]
-		return method
+		}
+		wrapper.wrap(methodToWrap)
+		AstAssert.assertSyntaxTree(expectedWrap, methodToWrap)
 	}
 }
