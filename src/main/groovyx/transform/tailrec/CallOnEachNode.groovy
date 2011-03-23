@@ -13,7 +13,7 @@ class CallOnEachNode extends CodeVisitorSupport {
 	def synchronized onEachNode(node, closure) {
 		this.closure = closure
 		callOn(node, null)
-		//node.visit(this)
+		node.visit(this)
 	}
 	
 	private callOn(node, parent) {
@@ -26,7 +26,8 @@ class CallOnEachNode extends CodeVisitorSupport {
 	
 	void visitBlockStatement(BlockStatement block) {
         for (Statement statement : block.getStatements()) {
-            statement.visit(this);
+            callOn(statement, block)
         }
+		super.visitBlockStatement(block)
 	}
 }

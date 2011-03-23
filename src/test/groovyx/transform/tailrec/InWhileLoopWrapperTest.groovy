@@ -20,7 +20,7 @@ class InWhileLoopWrapperTest {
 				exceptions {}
 				block { returnStatement{ constant 2 } }
 			}
-		}
+		}[0]
 		MethodNode expectedWrap = new AstBuilder().buildFromSpec {
 			method('myMethod', ACC_PUBLIC, int.class) {
 				parameters {}
@@ -32,8 +32,8 @@ class InWhileLoopWrapperTest {
 					}
 				}
 			}
-		}
+		}[0]
 		wrapper.wrap(methodToWrap)
-		AstAssert.assertSyntaxTree(expectedWrap, methodToWrap)
+		AstAssert.assertSyntaxTree([expectedWrap], [methodToWrap])
 	}
 }

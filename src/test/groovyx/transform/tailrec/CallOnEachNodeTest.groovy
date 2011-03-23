@@ -1,10 +1,10 @@
 package groovyx.transform.tailrec
 
-import static org.junit.Assert.*
 import static net.sf.cglib.asm.Opcodes.*
+import static org.junit.Assert.*
 
-import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.builder.AstBuilder
+import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.junit.Test
 
 class CallOnEachNodeTest {
@@ -13,7 +13,7 @@ class CallOnEachNodeTest {
 
 	@Test
 	public void rootNode() {
-		def method = new AstBuilder().buildFromSpec {
+		def myMethod = new AstBuilder().buildFromSpec {
 			method('myMethod', ACC_PUBLIC, Void.TYPE) {
 				parameters {}
 				exceptions {}
@@ -22,14 +22,40 @@ class CallOnEachNodeTest {
 			}
 		}[0]
 
-		def params
-
-		visitor.onEachNode(method.code) {params = it}
-		assert params.is(method.code)
-
-		visitor.onEachNode(method.code) {node, parent -> 
-			params = [node, parent]
+		def calledOn = []
+		visitor.onEachNode(myMethod.code) {calledOn << it}
+		assert calledOn.contains(myMethod.code) 
+		
+		def calledWithParent = [:] 
+		visitor.onEachNode(myMethod.code) {node, parent ->
+			calledWithParent[node] = parent
 		}
-		assert params == [method.code, null]
+		assert calledWithParent[myMethod.code] == null
+	}
+
+	@Test
+	public void statementsInBlock() {
+		def myMethod = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+					expression {
+						constant { 1 }
+					}
+				}
+			}
+		}[0]
+
+		def calledOn = []
+		visitor.onEachNode(myMethod.code) {calledOn << it}
+		assert calledOn.contains(myMethod.code) 
+		assert calledOn.contains(myMethod.code.statements[0])
+		
+		def calledWithParent = [:] 
+		visitor.onEachNode(myMethod.code) {node, parent ->
+			calledWithParent[node] = parent
+		}
+		assert calledWithParent[myMethod.code.statements[0]] == myMethod.code
 	}
 }
