@@ -51,12 +51,26 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 	private void transformNonVoidMethodToIteration(MethodNode method) {
 		fillInMissingReturns(method)
 		wrapMethodBodyWithWhileLoop(method)
-		//		Map nameMapping, positionMapping
-		//		(nameMapping, positionMapping) = findAllParameterMappings(method)
+		Map nameMapping, positionMapping
+		(nameMapping, positionMapping) = parameterMappingFor(method)
+		
 		//		replaceAllAccessToParams(method, nameMapping)
 		//		addLocalVariablesForAllParameters(method, nameMapping)
 		//		replaceAllRecursiveReturnsWithVariableAssignment(method, positionMapping)
 
+	}
+	
+	def parameterMappingFor(MethodNode method) {
+		def nameMapping = [:]
+		def positionMapping = [:]
+		BlockStatement code = method.code
+		method.parameters.eachWithIndex { Parameter param, index ->
+			def paramName = param.name
+			def localName = '_' + paramName + '_'
+			nameMapping[paramName] = localName
+			positionMapping[index] = localName
+		}
+		return [nameMapping, positionMapping]
 	}
 	
 	private void wrapMethodBodyWithWhileLoop(MethodNode method) {
