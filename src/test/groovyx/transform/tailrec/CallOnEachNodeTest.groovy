@@ -44,6 +44,22 @@ class CallOnEachNodeTest {
 		assertOnEachNode(callOn: myMethod.code, wasCalledWithParent: [(myMethod.code.statements[0]): myMethod.code])
 	}
 
+	@Test
+	public void expressions() {
+		def myExpression = new AstBuilder().buildFromSpec { expression { constant 1 } }[0]
+
+		assertOnEachNode(callOn: myExpression, wasCalled: myExpression.expression)
+		assertOnEachNode(callOn: myExpression, wasCalledWithParent: [(myExpression.expression): myExpression])
+	}
+
+	@Test
+	public void returns() {
+		def myReturn = new AstBuilder().buildFromSpec { returnStatement { constant 1 } }[0]
+
+		assertOnEachNode(callOn: myReturn, wasCalled: myReturn.expression)
+		assertOnEachNode(callOn: myReturn, wasCalledWithParent: [(myReturn.expression): myReturn])
+	}
+
 	private void assertOnEachNode(params) {
 		if (params.wasCalled) {
 			def calledOn = []

@@ -4,6 +4,8 @@ import groovy.lang.Closure;
 
 import org.codehaus.groovy.ast.CodeVisitorSupport
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.ast.stmt.Statement
 
 class CallOnEachNode extends CodeVisitorSupport {
@@ -24,10 +26,26 @@ class CallOnEachNode extends CodeVisitorSupport {
 		}
 	}
 	
+	@Override
 	void visitBlockStatement(BlockStatement block) {
         for (Statement statement : block.getStatements()) {
             callOn(statement, block)
         }
 		super.visitBlockStatement(block)
 	}
+	
+	@Override
+    void visitExpressionStatement(ExpressionStatement statement) {
+        callOn(statement.getExpression(), statement)
+		super.visitExpressionStatement(statement)
+    }
+	
+	@Override
+	public void visitReturnStatement(ReturnStatement statement) {
+        callOn(statement.getExpression(), statement)
+		super.visitReturnStatement(statement)
+	}
+
+
+
 }
