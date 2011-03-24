@@ -1,6 +1,8 @@
 package groovyx.transform.tailrec
 
 
+import java.util.Map;
+
 import groovyx.transform.TailRecursive
 
 import org.codehaus.groovy.ast.*
@@ -53,13 +55,34 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 		wrapMethodBodyWithWhileLoop(method)
 		Map nameMapping, positionMapping
 		(nameMapping, positionMapping) = parameterMappingFor(method)
+		addLocalVariablesForAllParameters(method, nameMapping)
+		replaceAllAccessToParams(method, nameMapping)
 		
-		//		replaceAllAccessToParams(method, nameMapping)
-		//		addLocalVariablesForAllParameters(method, nameMapping)
-		//		replaceAllRecursiveReturnsWithVariableAssignment(method, positionMapping)
+		// replaceAllRecursiveReturnsWithVariableAssignment(method, positionMapping)
 
 	}
 	
+	void addLocalVariablesForAllParameters(MethodNode method, Map nameMapping) {
+		BlockStatement code = method.code
+		nameMapping.each { paramName, localName ->
+			code.statements.add(0, AstHelper.createVariableDefinition(localName, new VariableExpression(paramName)))
+		}
+	}
+	
+	void replaceAllAccessToParams(MethodNode method, Map nameMapping) {
+		def whenParam = { expression ->
+			if (! (expression instanceof VariableExpression)) {
+				return false
+			}
+			return nameMapping.containsKey(expression.name)
+		}
+		def replaceWithLocalVariable = { expression ->
+			new VariableExpression(nameMapping[expression.name])
+		}
+		def replacer = new ASTNodesReplacer(when: whenParam, replaceWith: replaceWithLocalVariable)
+		replacer.replaceIn(method.code)
+	}
+
 	def parameterMappingFor(MethodNode method) {
 		def nameMapping = [:]
 		def positionMapping = [:]

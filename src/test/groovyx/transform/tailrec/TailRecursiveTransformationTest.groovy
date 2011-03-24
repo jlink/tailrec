@@ -55,7 +55,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         """) }
 	}
 
-	void _testSimpleRecursiveMethod() {
+	void testSimpleRecursiveMethod() {
 		def target = evaluate("""
             import groovyx.transform.TailRecursive
             class TargetClass {
