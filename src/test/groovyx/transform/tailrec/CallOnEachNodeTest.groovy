@@ -3,6 +3,7 @@ package groovyx.transform.tailrec
 import static net.sf.cglib.asm.Opcodes.*
 import static org.junit.Assert.*
 
+import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.junit.Test
@@ -22,15 +23,8 @@ class CallOnEachNodeTest {
 			}
 		}[0]
 
-		def calledOn = []
-		visitor.onEachNode(myMethod.code) {calledOn << it}
-		assert calledOn.contains(myMethod.code) 
-		
-		def calledWithParent = [:] 
-		visitor.onEachNode(myMethod.code) {node, parent ->
-			calledWithParent[node] = parent
-		}
-		assert calledWithParent[myMethod.code] == null
+		assertOnEachNode(callOn: myMethod.code, wasCalled: myMethod.code)
+		assertOnEachNode(callOn: myMethod.code, wasCalledWithParent: [(myMethod.code): null])
 	}
 
 	@Test
@@ -40,22 +34,32 @@ class CallOnEachNodeTest {
 				parameters {}
 				exceptions {}
 				block {
-					expression {
-						constant { 1 }
-					}
+					expression { constant 1  }
+					returnStatement {constant null}
 				}
 			}
 		}[0]
 
-		def calledOn = []
-		visitor.onEachNode(myMethod.code) {calledOn << it}
-		assert calledOn.contains(myMethod.code) 
-		assert calledOn.contains(myMethod.code.statements[0])
-		
-		def calledWithParent = [:] 
-		visitor.onEachNode(myMethod.code) {node, parent ->
-			calledWithParent[node] = parent
+		assertOnEachNode(callOn: myMethod.code, wasCalled: myMethod.code.statements)
+		assertOnEachNode(callOn: myMethod.code, wasCalledWithParent: [(myMethod.code.statements[0]): myMethod.code])
+	}
+
+	private void assertOnEachNode(params) {
+		if (params.wasCalled) {
+			def calledOn = []
+			visitor.onEachNode(params.callOn) {calledOn << it}
+			params.wasCalled.each({
+				assert calledOn.contains(it), "$it should have been called"
+			})
 		}
-		assert calledWithParent[myMethod.code.statements[0]] == myMethod.code
+		if (params.wasCalledWithParent) {
+			def calledWithParent = [:]
+			visitor.onEachNode(params.callOn) {node, parent ->
+				calledWithParent[node] = parent
+			}
+			params.wasCalledWithParent.each({key, value ->
+				assert calledWithParent[key] == value, "$key should have been called with parent $value"
+			})
+		}
 	}
 }
