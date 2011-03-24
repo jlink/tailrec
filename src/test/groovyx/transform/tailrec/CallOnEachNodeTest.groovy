@@ -3,9 +3,7 @@ package groovyx.transform.tailrec
 import static net.sf.cglib.asm.Opcodes.*
 import static org.junit.Assert.*
 
-import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.builder.AstBuilder
-import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.junit.Test
 
 class CallOnEachNodeTest {
@@ -58,6 +56,39 @@ class CallOnEachNodeTest {
 
 		assertOnEachNode(callOn: myReturn, wasCalled: myReturn.expression)
 		assertOnEachNode(callOn: myReturn, wasCalledWithParent: [(myReturn.expression): myReturn])
+	}
+
+	@Test
+	public void methodCall() {
+		def myMethodCall = new AstBuilder().buildFromSpec {
+			methodCall {
+				variable "this"
+				constant "println"
+				argumentList { constant "Hello" }
+			}
+		}[0]
+
+		assertOnEachNode(callOn: myMethodCall, wasCalled: [
+			myMethodCall.objectExpression,
+			myMethodCall.method,
+			myMethodCall.arguments
+		])
+		assertOnEachNode(callOn: myMethodCall, wasCalledWithParent: [(myMethodCall.objectExpression): myMethodCall])
+	}
+
+	@Test
+	public void staticMethodCall() {
+		def myMethodCall = new AstBuilder().buildFromSpec {
+			staticMethodCall(Math, "min") {
+				argumentList {
+					constant 1
+					constant 2
+				}
+			}
+		}[0]
+
+		assertOnEachNode(callOn: myMethodCall, wasCalled: myMethodCall.arguments)
+		assertOnEachNode(callOn: myMethodCall, wasCalledWithParent: [(myMethodCall.arguments): myMethodCall])
 	}
 
 	private void assertOnEachNode(params) {

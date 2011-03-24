@@ -3,6 +3,8 @@ package groovyx.transform.tailrec
 import groovy.lang.Closure;
 
 import org.codehaus.groovy.ast.CodeVisitorSupport
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
@@ -46,6 +48,17 @@ class CallOnEachNode extends CodeVisitorSupport {
 		super.visitReturnStatement(statement)
 	}
 
+	@Override
+	public void visitMethodCallExpression(MethodCallExpression call) {
+		callOn(call.getObjectExpression(), call);
+		callOn(call.getMethod(), call);
+		callOn(call.getArguments(), call);
+		super.visitMethodCallExpression(call)
+	}
 
-
+	@Override
+	public void visitStaticMethodCallExpression(StaticMethodCallExpression call) {
+		callOn(call.getArguments(), call);
+		super.visitStaticMethodCallExpression(call);
+	}
 }
