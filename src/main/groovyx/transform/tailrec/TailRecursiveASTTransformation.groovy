@@ -99,7 +99,7 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 				return false
 			}
 			Expression inner = statement.expression
-			if (! (inner instanceof MethodCallExpression)) {
+			if (!(inner instanceof MethodCallExpression) && !(inner instanceof StaticMethodCallExpression) ) {
 				return false
 			}
 			return isRecursiveIn(inner, method)

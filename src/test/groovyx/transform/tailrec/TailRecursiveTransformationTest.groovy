@@ -1,5 +1,7 @@
 package groovyx.transform.tailrec
 
+import org.junit.Test;
+
 class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testIgnoreMethodsWithoutRecursiveCall() {
@@ -63,7 +65,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
             	int countDown(int zahl) {
             		if (zahl == 0)
             			return zahl
-            		return countDown(zahl - 1)
+            		countDown(zahl - 1)
             	}
             }
             new TargetClass()
@@ -73,6 +75,40 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	}
 	
 	void testSimpleStaticRecursiveMethod() {
-		fail()
+		def target = evaluate("""
+            import groovyx.transform.TailRecursive
+            class TargetClass {
+            	@TailRecursive
+            	static int staticCountDown(int zahl) {
+            		if (zahl == 0)
+            			return zahl
+            		return staticCountDown(zahl - 1)
+            	}
+            }
+            new TargetClass()
+        """)
+		assert target.staticCountDown(5) == 0
+		assert target.staticCountDown(100000) == 0
 	}
+	
+	void testRecursiveFunctionWithTwoParameters() {
+		def target = evaluate('''
+            import groovyx.transform.TailRecursive
+            class TargetClass {
+				@TailRecursive
+				long sumUp(long number, long sum) {
+					if (number == 0)
+						return sum;
+					return sumUp(number - 1, sum + number)
+				}
+        	}
+            new TargetClass()
+		''')
+
+		assert target.sumUp(0, 0) == 0
+		assert target.sumUp(1, 0) == 1
+		assert target.sumUp(5, 0) == 15
+		assert target.sumUp(1000000, 0) == 500000500000
+	}
+
 }
