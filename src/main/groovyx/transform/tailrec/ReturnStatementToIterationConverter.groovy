@@ -8,9 +8,9 @@ import org.codehaus.groovy.ast.stmt.*
 class ReturnStatementToIterationConverter {
 
 	Statement convert(ReturnStatement statement, Map positionMapping) {
-		if (! (statement.getExpression() instanceof MethodCallExpression))
+		def recursiveCall = statement.expression
+		if (! recursiveCall.class in [MethodCallExpression, StaticMethodCallExpression])
 			return statement
-		MethodCallExpression recursiveCall = statement.getExpression()
 
 		Map tempMapping = [:]
 		Map tempDeclarations = [:]

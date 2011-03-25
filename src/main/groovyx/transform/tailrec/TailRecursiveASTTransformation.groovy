@@ -46,7 +46,6 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 	}
 
 	private void transformVoidMethodToIteration(MethodNode method) {
-		//todo
 		throwException(method: method, message: "void methods are not supported yet!")
 	}
 
@@ -55,11 +54,9 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 		wrapMethodBodyWithWhileLoop(method)
 		Map nameMapping, positionMapping
 		(nameMapping, positionMapping) = parameterMappingFor(method)
-		addLocalVariablesForAllParameters(method, nameMapping)
 		replaceAllAccessToParams(method, nameMapping)
-		
-		// replaceAllRecursiveReturnsWithVariableAssignment(method, positionMapping)
-
+		addLocalVariablesForAllParameters(method, nameMapping) //must happen after replacing access to params
+		replaceAllRecursiveReturnsWithIteration(method, positionMapping)
 	}
 	
 	void addLocalVariablesForAllParameters(MethodNode method, Map nameMapping) {
@@ -96,6 +93,25 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 		return [nameMapping, positionMapping]
 	}
 	
+	private replaceAllRecursiveReturnsWithIteration(MethodNode method, Map positionMapping) {
+		def whenRecursiveReturn = { statement ->
+			if (! (statement instanceof ReturnStatement)) {
+				return false
+			}
+			Expression inner = statement.expression
+			if (! (inner instanceof MethodCallExpression)) {
+				return false
+			}
+			return isRecursiveIn(inner, method)
+		}
+		def replaceWithContinueBlock = { statement ->
+			def rep = new ReturnStatementToIterationConverter().convert(statement, positionMapping)
+			rep
+		}
+		def replacer = new ASTNodesReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
+		replacer.replaceIn(method.code)
+	}
+
 	private void wrapMethodBodyWithWhileLoop(MethodNode method) {
 		new InWhileLoopWrapper().wrap(method)
 	}
@@ -120,5 +136,9 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 
 	private boolean hasRecursiveMethodCalls(MethodNode method) {
 		hasRecursiveCalls.test(method)
+	}
+
+	private boolean isRecursiveIn(methodCall, MethodNode method) {
+		new RecursivenessTester().isRecursive(method, methodCall)
 	}
 }

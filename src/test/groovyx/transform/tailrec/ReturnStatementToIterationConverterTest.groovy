@@ -89,15 +89,47 @@ class ReturnStatementToIterationConverterTest {
 
 	@Test
 	public void twoParametersBothUsedInRecursiveCall() {
-		BlockStatement expected = new BlockStatement()
-		expected.addStatement(new ExpressionStatement(new DeclarationExpression(new VariableExpression("__a__"), AstHelper.ASSIGN, new VariableExpression("_a_"))))
-		expected.addStatement(new ExpressionStatement(new BinaryExpression(new VariableExpression("_a_"), AstHelper.ASSIGN,
-				new BinaryExpression(new VariableExpression("__a__"), AstHelper.PLUS, new ConstantExpression(1)))))
-		expected.addStatement(new ExpressionStatement(new DeclarationExpression(new VariableExpression("__b__"), AstHelper.ASSIGN, new VariableExpression("_b_"))))
-		expected.addStatement(new ExpressionStatement(
-				new BinaryExpression(new VariableExpression("_b_"), AstHelper.ASSIGN,
-				new BinaryExpression(new VariableExpression("__b__"), AstHelper.PLUS, new VariableExpression("__a__")))))
-		expected.addStatement(new ContinueStatement())
+		BlockStatement expected = new AstBuilder().buildFromSpec {
+			block {
+				expression {
+					declaration {
+						variable '__a__'
+						token '='
+						variable '_a_'
+					}
+				}
+				expression {
+					binary {
+						variable '_a_'
+						token '='
+						binary {
+							variable '__a__'
+							token '+'
+							constant 1
+						}
+					}
+				}
+				expression {
+					declaration {
+						variable '__b__'
+						token '='
+						variable '_b_'
+					}
+				}
+				expression {
+					binary {
+						variable '_b_'
+						token '='
+						binary {
+							variable '__b__'
+							token '+'
+							variable '__a__'
+						}
+					}
+				}
+				continueStatement()
+			}
+		}[0]
 
 		ReturnStatement statement = new AstBuilder().buildFromString( """
 		return(myMethod(_a_ + 1, _b_ + _a_))
@@ -105,7 +137,31 @@ class ReturnStatementToIterationConverterTest {
 
 
 		Map positionMapping = [0:'_a_', 1:'_b_']
+		def block = new ReturnStatementToIterationConverter().convert(statement, positionMapping)
 
+		AstAssert.assertSyntaxTree([expected], [block])
+	}
+
+	@Test
+	public void worksWithStaticMethods() {
+		ReturnStatement statement = new ReturnStatement(new StaticMethodCallExpression(
+				ClassHelper.make(Math, false), "min",
+				new ArgumentListExpression(new ConstantExpression(1))))
+
+		BlockStatement expected = new AstBuilder().buildFromSpec {
+			block {
+				expression {
+					binary {
+						variable '_a_'
+						token '='
+						constant 1
+					}
+				}
+				continueStatement()
+			}
+		}[0]
+
+		Map positionMapping = [0:'_a_']
 		def block = new ReturnStatementToIterationConverter().convert(statement, positionMapping)
 
 		AstAssert.assertSyntaxTree([expected], [block])

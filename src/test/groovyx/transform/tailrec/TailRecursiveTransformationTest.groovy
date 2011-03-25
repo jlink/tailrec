@@ -55,7 +55,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         """) }
 	}
 
-	void _testSimpleRecursiveMethod() {
+	void testSimpleRecursiveMethod() {
 		def target = evaluate("""
             import groovyx.transform.TailRecursive
             class TargetClass {
@@ -69,5 +69,10 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
             new TargetClass()
         """)
 		assert target.countDown(5) == 0
+		assert target.countDown(100000) == 0 //wouldn't work with real recursion
+	}
+	
+	void testSimpleStaticRecursiveMethod() {
+		fail()
 	}
 }
