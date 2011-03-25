@@ -9,7 +9,10 @@ class ReturnStatementToIterationConverter {
 
 	Statement convert(ReturnStatement statement, Map positionMapping) {
 		def recursiveCall = statement.expression
-		if (! recursiveCall.class in [MethodCallExpression, StaticMethodCallExpression])
+		if (! recursiveCall.class in [
+			MethodCallExpression,
+			StaticMethodCallExpression
+		])
 			return statement
 
 		Map tempMapping = [:]
@@ -17,6 +20,7 @@ class ReturnStatementToIterationConverter {
 		List<ExpressionStatement> argAssignments = []
 
 		BlockStatement result = new BlockStatement()
+		result.statementLabel = statement.statementLabel
 		recursiveCall.arguments.expressions.eachWithIndex { Expression expression, index ->
 			def argName = positionMapping[index]
 			def tempName = "_${argName}_"

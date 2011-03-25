@@ -23,6 +23,7 @@ class ReturnStatementToIterationConverterTest {
 				}
 			}
 		}[0]
+		statement.statementLabel = "aLabel"
 
 		BlockStatement expected = new AstBuilder().buildFromSpec {
 			block {
@@ -43,6 +44,7 @@ class ReturnStatementToIterationConverterTest {
 		def block = new ReturnStatementToIterationConverter().convert(statement, positionMapping)
 
 		AstAssert.assertSyntaxTree([expected], [block])
+		assert block.statementLabel == "aLabel"
 	}
 
 	@Test
