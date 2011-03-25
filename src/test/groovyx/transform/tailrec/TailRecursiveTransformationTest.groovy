@@ -99,7 +99,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 				long sumUp(long number, long sum) {
 					if (number == 0)
 						return sum;
-					return sumUp(number - 1, sum + number)
+					sumUp(number - 1, sum + number)
 				}
         	}
             new TargetClass()
@@ -111,4 +111,46 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 		assert target.sumUp(1000000, 0) == 500000500000
 	}
 
+	void testRecursiveFunctionWithTwoRecursiveCalls() {
+		def target = evaluate('''
+			import groovyx.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				int countDown(int number) {
+					if (number == 0)
+						return number;
+					if (number < 10)
+						return countDown(number - 1)
+					else
+						return countDown(number - 1)
+				}
+			}
+			new TargetClass()
+		''')
+
+		assert target.countDown(0) == 0
+		assert target.countDown(9) == 0
+		assert target.countDown(100) == 0
+	}
+
+	void _testRecursiveFunctionWithReturnInForLoop() {
+		// for loops can have "continue" thus the while-iteration's continue might not work
+		def target = evaluate('''
+			import groovyx.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				int countDownWithFor(int number) {
+					if (number <= 1)
+						return number;
+					for (int i = number - 1; i > 0; i++)
+						return countDownWithFor(i);
+				}
+			}
+			new TargetClass()
+		''')
+
+		assert target.countDownWithFor(0) == 0
+		assert target.countDownWithFor(9) == 1
+		assert target.countDownWithFor(100) == 1
+	}
 }

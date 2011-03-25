@@ -105,8 +105,7 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 			return isRecursiveIn(inner, method)
 		}
 		def replaceWithContinueBlock = { statement ->
-			def rep = new ReturnStatementToIterationConverter().convert(statement, positionMapping)
-			rep
+			new ReturnStatementToIterationConverter().convert(statement, positionMapping)
 		}
 		def replacer = new ASTNodesReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
 		replacer.replaceIn(method.code)
