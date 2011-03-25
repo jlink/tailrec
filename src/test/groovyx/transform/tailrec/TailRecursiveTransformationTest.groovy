@@ -133,7 +133,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 		assert target.countDown(100) == 0
 	}
 
-	void _testRecursiveFunctionWithReturnInForLoop() {
+	void testRecursiveFunctionWithReturnInForLoop() {
 		// for loops can have "continue" thus the while-iteration's continue might not work
 		def target = evaluate('''
 			import groovyx.transform.TailRecursive

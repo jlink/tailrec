@@ -33,7 +33,9 @@ class ReturnStatementToIterationConverterTest {
 						constant 1
 					}
 				}
-				continueStatement()
+				continueStatement {
+					label InWhileLoopWrapper.LOOP_LABEL
+				}
 			}
 		}[0]
 
@@ -73,7 +75,9 @@ class ReturnStatementToIterationConverterTest {
 						}
 					}
 				}
-				continueStatement()
+				continueStatement {
+					label InWhileLoopWrapper.LOOP_LABEL
+				}
 			}
 		}[0]
 
@@ -127,7 +131,9 @@ class ReturnStatementToIterationConverterTest {
 						}
 					}
 				}
-				continueStatement()
+				continueStatement {
+					label InWhileLoopWrapper.LOOP_LABEL
+				}
 			}
 		}[0]
 
@@ -157,7 +163,9 @@ class ReturnStatementToIterationConverterTest {
 						constant 1
 					}
 				}
-				continueStatement()
+				continueStatement {
+					label InWhileLoopWrapper.LOOP_LABEL
+				}
 			}
 		}[0]
 

@@ -32,7 +32,7 @@ class ReturnStatementToIterationConverter {
 		for (String temp : unusedTemps) {
 			result.statements.remove(tempDeclarations[temp])
 		}
-		result.addStatement(new ContinueStatement())
+		result.addStatement(new ContinueStatement(InWhileLoopWrapper.LOOP_LABEL))
 
 		return result
 	}

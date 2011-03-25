@@ -21,6 +21,7 @@ class InWhileLoopWrapperTest {
 				block { returnStatement{ constant 2 } }
 			}
 		}[0]
+		
 		MethodNode expectedWrap = new AstBuilder().buildFromSpec {
 			method('myMethod', ACC_PUBLIC, int.class) {
 				parameters {}
@@ -28,12 +29,16 @@ class InWhileLoopWrapperTest {
 				block {
 					whileStatement {
 						booleanExpression { constant true }
-						block {   returnStatement{  constant 2 } }
+						block {   
+							returnStatement{  constant 2 } 
+						}
 					}
 				}
 			}
 		}[0]
+		
 		wrapper.wrap(methodToWrap)
 		AstAssert.assertSyntaxTree([expectedWrap], [methodToWrap])
+		assert methodToWrap.code.statements[0].loopBlock.statements[0].statementLabel == InWhileLoopWrapper.LOOP_LABEL
 	}
 }
