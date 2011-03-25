@@ -17,7 +17,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformationClass
  *    sumUp(number - 1, sum + number)
  *  }
  * </pre>
- * Know shortcomings:
+ * Known shortcomings:
  * <ul>
  * <li>Only non-void methods are currently being handled.
  * <li>The recursive call must not use default parameters.
