@@ -1,5 +1,9 @@
 TODO:
-- fill in returns for if-then-else, switch, etc
+- fill in returns for if-then-else, switch, and other non-expressions which do return a value if they are last in a method
 - handle recursive calls in some expressions like ternary operator
-- The whole void method branch
+- refine recursiveness detection: match arg types, check for overloads and overrides.
+- Add annotation (@NotTailRecursive?) for calls that are not direct tail-calls
+- Exclude final parameters from copying to local var
+- Exclude parameters that are just "reentered" into recursive call from copying to local var
+- The whole void method branch, iff it makes sense.
  
