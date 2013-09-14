@@ -1,0 +1,19 @@
+apply plugin: 'groovy'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.2.0-beta-2'
+    compile files("${System.properties['java.home']}/../lib/tools.jar")
+    testCompile 'junit:junit:4.11'
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main']
+        }
+    }
+}
