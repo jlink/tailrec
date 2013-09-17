@@ -1,5 +1,6 @@
 package groovyx.transform.tailrec
 
+import org.codehaus.groovy.classgen.ReturnAdder
 
 import java.util.Map;
 
@@ -11,13 +12,14 @@ import org.codehaus.groovy.ast.stmt.*
 import org.codehaus.groovy.control.*
 import org.codehaus.groovy.transform.*
 
-@GroovyASTTransformation(phase=CompilePhase.SEMANTIC_ANALYSIS)
+@GroovyASTTransformation(phase=CompilePhase.CANONICALIZATION)
 class TailRecursiveASTTransformation implements ASTTransformation {
 
 	private static final Class MY_CLASS = TailRecursive.class;
 	private static final ClassNode MY_TYPE = new ClassNode(MY_CLASS);
 	static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage()
 	private HasRecursiveCalls hasRecursiveCalls = new HasRecursiveCalls()
+	private ReturnAdder returnAdder = new ReturnAdder()
 
 	@Override
 	public void visit(ASTNode[] nodes, SourceUnit source) {
@@ -27,17 +29,29 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 		if (!(nodes[0] instanceof AnnotationNode)) return;
 		if (!(nodes[1] instanceof MethodNode)) return;
 
-		MethodNode method = nodes[1];
+		MethodNode method = nodes[1]
 		if (!hasRecursiveMethodCalls(method)) {
 			println(transformationDescription(method) + " skipped: No recursive calls detected.")
 			return;
 		}
 		println(transformationDescription(method) + ": transform recursive calls to iteration.")
+    returnAdder.visitMethod(method)
+    ternaryHack(method)
 		transformToIteration(method)
 		checkAllRecursiveCallsHaveBeenTransformed(method)
 	}
 
-	void transformToIteration(MethodNode method) {
+  void ternaryHack(MethodNode methodNode) {
+    if (!(methodNode.code instanceof BlockStatement)) return
+    def last = methodNode.code.statements[-1]
+    if (!(last instanceof ExpressionStatement || last instanceof ReturnStatement)) return
+    if (!(last.expression instanceof TernaryExpression)) return
+    TernaryExpression te = last.expression
+    IfStatement ifs = new IfStatement(te.booleanExpression, new ReturnStatement(te.trueExpression), new ReturnStatement(te.falseExpression))
+    methodNode.code.statements[-1] = ifs
+  }
+
+  void transformToIteration(MethodNode method) {
 		if (method.isVoidMethod()) {
 			transformVoidMethodToIteration(method)
 		} else {

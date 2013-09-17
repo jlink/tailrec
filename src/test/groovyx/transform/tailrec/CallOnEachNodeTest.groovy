@@ -1,6 +1,6 @@
 package groovyx.transform.tailrec
 
-import static net.sf.cglib.asm.Opcodes.*
+import static org.objectweb.asm.Opcodes.*
 import static org.junit.Assert.*
 
 import org.codehaus.groovy.ast.builder.AstBuilder

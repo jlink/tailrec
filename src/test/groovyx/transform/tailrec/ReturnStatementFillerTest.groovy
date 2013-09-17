@@ -1,6 +1,6 @@
 package groovyx.transform.tailrec
 
-import static net.sf.cglib.asm.Opcodes.*
+import static org.objectweb.asm.Opcodes.*
 import static org.junit.Assert.*
 
 import org.codehaus.groovy.ast.builder.AstAssert
@@ -24,7 +24,9 @@ class ReturnStatementFillerTest {
 			}
 		}[0]
 		transformer.fill(method)
-		assert method.code.statements[-1] == ReturnStatement.RETURN_NULL_OR_VOID
+		println method.code.dump()
+		assert method.code.expression == ConstantExpression.NULL
+//		assert method.code.statements[-1] == ReturnStatement.RETURN_NULL_OR_VOID
 	}
 
 	@Test
@@ -43,7 +45,8 @@ class ReturnStatementFillerTest {
 			}
 		}[0]
 		transformer.fill(method)
-		assert (method.code.statements[-1] == ReturnStatement.RETURN_NULL_OR_VOID)
+//		assert (method.code.statements[-1] == ReturnStatement.RETURN_NULL_OR_VOID)
+		assert method.code.statements[-1].statements[-1].expression == ConstantExpression.NULL
 	}
 
 	@Test

@@ -5,7 +5,8 @@ import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.Statement
-import org.codehaus.groovy.ast.stmt.WhileStatement;
+import org.codehaus.groovy.ast.stmt.WhileStatement
+import org.codehaus.groovy.classgen.ReturnAdder;
 
 class ReturnStatementFiller {
 
@@ -14,6 +15,7 @@ class ReturnStatementFiller {
 	}
 
 	private addMissingReturnStatements(MethodNode method) {
+    /*
 		BlockStatement code = method.code
 		if (code.statements.isEmpty()) {
 			method.code.addStatement(ReturnStatement.RETURN_NULL_OR_VOID)
@@ -32,5 +34,7 @@ class ReturnStatementFiller {
 			return
 		}
 		//todo many unhandled non expression statements, e.g. if, switch etc
+		*/
+    new ReturnAdder().visitMethod(method)
 	}
 }
