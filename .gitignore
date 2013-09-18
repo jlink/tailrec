@@ -1,4 +1,5 @@
 build
 out
 .gradle
+workspace.xml
 tailrec.i*
