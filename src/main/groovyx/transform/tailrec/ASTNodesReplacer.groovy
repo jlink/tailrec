@@ -171,7 +171,7 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 		super.visitTernaryExpression(expression);
 	}
 
-	//todo
+	//todo: test
 	public void visitSwitch(SwitchStatement statement) {
 		statement.getExpression().visit(this);
 		for (CaseStatement caseStatement : statement.getCaseStatements()) {
@@ -180,49 +180,49 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 		statement.getDefaultStatement().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitCaseStatement(CaseStatement statement) {
 		statement.getExpression().visit(this);
 		statement.getCode().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitAssertStatement(AssertStatement statement) {
 		statement.getBooleanExpression().visit(this);
 		statement.getMessageExpression().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitSynchronizedStatement(SynchronizedStatement statement) {
 		statement.getExpression().visit(this);
 		statement.getCode().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitRangeExpression(RangeExpression expression) {
 		expression.getFrom().visit(this);
 		expression.getTo().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitMethodPointerExpression(MethodPointerExpression expression) {
 		expression.getExpression().visit(this);
 		expression.getMethodName().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitPropertyExpression(PropertyExpression expression) {
 		expression.getObjectExpression().visit(this);
 		expression.getProperty().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitAttributeExpression(AttributeExpression expression) {
 		expression.getObjectExpression().visit(this);
 		expression.getProperty().visit(this);
 	}
 
-	//todo
+	//todo: test
 	public void visitCatchStatement(CatchStatement statement) {
 		statement.getCode().visit(this);
 	}
