@@ -87,7 +87,7 @@ class CallOnEachNodeTest {
 			}
 		}[0]
 
-		assertOnEachNode(callOn: myMethodCall, wasCalled: myMethodCall.arguments)
+		assertOnEachNode(callOn: myMethodCall, wasCalled: [myMethodCall.arguments])
 		assertOnEachNode(callOn: myMethodCall, wasCalledWithParent: [(myMethodCall.arguments): myMethodCall])
 	}
 
