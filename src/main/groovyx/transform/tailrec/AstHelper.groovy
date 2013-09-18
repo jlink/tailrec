@@ -1,7 +1,9 @@
 package groovyx.transform.tailrec
 
-import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.expr.*
+import org.codehaus.groovy.ast.expr.BinaryExpression
+import org.codehaus.groovy.ast.expr.DeclarationExpression
+import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.syntax.Token
 

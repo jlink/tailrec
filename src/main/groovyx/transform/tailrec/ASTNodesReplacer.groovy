@@ -1,11 +1,9 @@
 package groovyx.transform.tailrec
 
-import java.util.List
-
-import org.codehaus.groovy.ast.*
+import org.codehaus.groovy.ast.ASTNode
+import org.codehaus.groovy.ast.CodeVisitorSupport
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.*
-import org.codehaus.groovy.classgen.BytecodeExpression
 
 class ASTNodesReplacer extends CodeVisitorSupport {
 

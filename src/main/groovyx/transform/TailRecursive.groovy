@@ -1,8 +1,11 @@
 package groovyx.transform
 
-
-import java.lang.annotation.*
 import org.codehaus.groovy.transform.GroovyASTTransformationClass
+
+import java.lang.annotation.ElementType
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+import java.lang.annotation.Target
 
 /**
  * Class annotation used to transform method with tail recursive calls into iterative methods automagically

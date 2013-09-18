@@ -1,12 +1,7 @@
 package groovyx.transform.tailrec
 
 import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.stmt.BlockStatement
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.ReturnStatement
-import org.codehaus.groovy.ast.stmt.Statement
-import org.codehaus.groovy.ast.stmt.WhileStatement
-import org.codehaus.groovy.classgen.ReturnAdder;
+import org.codehaus.groovy.classgen.ReturnAdder
 
 class ReturnStatementFiller {
 

@@ -1,13 +1,12 @@
 package groovyx.transform.tailrec
 
-import static org.objectweb.asm.Opcodes.*
-import static org.junit.Assert.*
-
 import org.codehaus.groovy.ast.builder.AstAssert
 import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.junit.Test
+
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC
 
 class ReturnStatementFillerTest {
 

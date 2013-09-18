@@ -1,9 +1,8 @@
 package groovyx.transform.tailrec
 
 import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.expr.*
-import org.codehaus.groovy.ast.stmt.ExpressionStatement
-import org.codehaus.groovy.syntax.Token
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 
 /**
  * 

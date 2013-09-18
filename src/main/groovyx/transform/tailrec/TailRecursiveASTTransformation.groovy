@@ -1,16 +1,17 @@
 package groovyx.transform.tailrec
 
-import org.codehaus.groovy.classgen.ReturnAdder
-
-import java.util.Map;
-
 import groovyx.transform.TailRecursive
-
 import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.expr.*
-import org.codehaus.groovy.ast.stmt.*
-import org.codehaus.groovy.control.*
-import org.codehaus.groovy.transform.*
+import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.ExpressionStatement
+import org.codehaus.groovy.ast.stmt.IfStatement
+import org.codehaus.groovy.ast.stmt.ReturnStatement
+import org.codehaus.groovy.classgen.ReturnAdder
+import org.codehaus.groovy.control.CompilePhase
+import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.transform.ASTTransformation
+import org.codehaus.groovy.transform.GroovyASTTransformation
 
 @GroovyASTTransformation(phase=CompilePhase.CANONICALIZATION)
 class TailRecursiveASTTransformation implements ASTTransformation {

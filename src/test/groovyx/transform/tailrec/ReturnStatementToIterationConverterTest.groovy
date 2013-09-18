@@ -1,12 +1,13 @@
 package groovyx.transform.tailrec
 
-import static org.junit.Assert.*
-
-import org.codehaus.groovy.ast.*
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.builder.AstAssert
 import org.codehaus.groovy.ast.builder.AstBuilder
-import org.codehaus.groovy.ast.expr.*
-import org.codehaus.groovy.ast.stmt.*
+import org.codehaus.groovy.ast.expr.ArgumentListExpression
+import org.codehaus.groovy.ast.expr.ConstantExpression
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
+import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.junit.Test
 
 class ReturnStatementToIterationConverterTest {

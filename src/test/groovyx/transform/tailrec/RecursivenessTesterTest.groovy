@@ -1,16 +1,16 @@
 package groovyx.transform.tailrec
 
-import static org.objectweb.asm.Opcodes.*
-import static org.junit.Assert.*
-
-import org.codehaus.groovy.ast.ClassHelper;
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.builder.AstBuilder
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
+import org.codehaus.groovy.ast.expr.ArgumentListExpression
+import org.codehaus.groovy.ast.expr.ConstantExpression
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 import org.junit.Before
 import org.junit.Test
+
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC
+import static org.objectweb.asm.Opcodes.ACC_STATIC
 
 
 class RecursivenessTesterTest {

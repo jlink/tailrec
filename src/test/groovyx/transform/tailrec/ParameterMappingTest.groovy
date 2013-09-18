@@ -1,10 +1,9 @@
 package groovyx.transform.tailrec
 
-import static org.objectweb.asm.Opcodes.*
-import static org.junit.Assert.*
-
 import org.codehaus.groovy.ast.builder.AstBuilder
 import org.junit.Test
+
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC
 
 class ParameterMappingTest {
 

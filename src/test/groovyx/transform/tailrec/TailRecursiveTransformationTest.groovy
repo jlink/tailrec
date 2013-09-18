@@ -1,7 +1,5 @@
 package groovyx.transform.tailrec
 
-import org.junit.Test;
-
 class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testIgnoreMethodsWithoutRecursiveCall() {
