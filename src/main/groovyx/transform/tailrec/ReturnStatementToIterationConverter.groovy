@@ -24,7 +24,7 @@ class ReturnStatementToIterationConverter {
 			def tempName = "_${argName}_"
             def tempType = positionMapping[index].type //todo: Use for creating variable
 			tempMapping[argName] = tempName
-			def tempDeclaration = AstHelper.createVariableAlias(tempName, argName)
+			def tempDeclaration = AstHelper.createVariableAlias(tempName, tempType, argName)
 			tempDeclarations[tempName] = tempDeclaration
 			result.addStatement(tempDeclaration)
 			def argAssignment = AstHelper.createAssignment(argName, expression)

@@ -74,10 +74,9 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 	}
 	
 	void addLocalVariablesForAllParameters(MethodNode method, Map nameAndTypeMapping) {
-        println nameAndTypeMapping //todo
 		BlockStatement code = method.code
 		nameAndTypeMapping.each { paramName, localNameAndType ->
-			code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, new VariableExpression(paramName)))
+			code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, localNameAndType.type, new VariableExpression(paramName)))
 		}
 	}
 	

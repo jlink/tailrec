@@ -1,5 +1,6 @@
 package groovyx.transform.tailrec
 
+import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.BinaryExpression
 import org.codehaus.groovy.ast.expr.DeclarationExpression
 import org.codehaus.groovy.ast.expr.Expression
@@ -12,12 +13,13 @@ class AstHelper {
 	static final Token ASSIGN = Token.newSymbol("=", -1, -1)
 	static final Token PLUS = Token.newSymbol("+", -1, -1)
 
-	static ExpressionStatement createVariableDefinition(String variableName, Expression value ) {
+	static ExpressionStatement createVariableDefinition(String variableName, ClassNode type, Expression value ) {
+        //todo use type information for creating the new variable
 		new ExpressionStatement(new DeclarationExpression(new VariableExpression(variableName), AstHelper.ASSIGN, value))
 	}
 
-	static ExpressionStatement createVariableAlias(String aliasName, String variableName ) {
-		createVariableDefinition(aliasName, new VariableExpression(variableName))
+	static ExpressionStatement createVariableAlias(String aliasName, ClassNode type, String variableName ) {
+		createVariableDefinition(aliasName, type, new VariableExpression(variableName))
 	}
 
 	static ExpressionStatement createAssignment(String variableName, Expression value ) {
