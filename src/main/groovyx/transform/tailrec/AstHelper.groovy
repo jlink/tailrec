@@ -13,16 +13,19 @@ class AstHelper {
 	static final Token ASSIGN = Token.newSymbol("=", -1, -1)
 	static final Token PLUS = Token.newSymbol("+", -1, -1)
 
-	static ExpressionStatement createVariableDefinition(String variableName, ClassNode type, Expression value ) {
-        //todo use type information for creating the new variable
-		new ExpressionStatement(new DeclarationExpression(new VariableExpression(variableName), AstHelper.ASSIGN, value))
+	static ExpressionStatement createVariableDefinition(String variableName, ClassNode variableType, Expression value ) {
+		new ExpressionStatement(new DeclarationExpression(new VariableExpression(variableName, variableType), AstHelper.ASSIGN, value))
 	}
 
-	static ExpressionStatement createVariableAlias(String aliasName, ClassNode type, String variableName ) {
-		createVariableDefinition(aliasName, type, new VariableExpression(variableName))
+	static ExpressionStatement createVariableAlias(String aliasName, ClassNode variableType, String variableName ) {
+		createVariableDefinition(aliasName, variableType, new VariableExpression(variableName, variableType))
 	}
 
-	static ExpressionStatement createAssignment(String variableName, Expression value ) {
-		new ExpressionStatement(new BinaryExpression(new VariableExpression(variableName), AstHelper.ASSIGN, value))
+	static ExpressionStatement createAssignment(String variableName, ClassNode variableType, Expression value ) {
+		new ExpressionStatement(new BinaryExpression(new VariableExpression(variableName, variableType), AstHelper.ASSIGN, value))
 	}
+
+    static VariableExpression createVariableReference(Map variableSpec) {
+        new VariableExpression(variableSpec.name, variableSpec.type)
+    }
 }

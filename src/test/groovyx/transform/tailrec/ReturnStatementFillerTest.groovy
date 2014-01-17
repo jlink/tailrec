@@ -23,7 +23,6 @@ class ReturnStatementFillerTest {
 			}
 		}[0]
 		transformer.fill(method)
-		println method.code.dump()
 		assert method.code.expression == ConstantExpression.NULL
 //		assert method.code.statements[-1] == ReturnStatement.RETURN_NULL_OR_VOID
 	}

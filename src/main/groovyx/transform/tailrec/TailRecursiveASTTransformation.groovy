@@ -76,7 +76,7 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 	void addLocalVariablesForAllParameters(MethodNode method, Map nameAndTypeMapping) {
 		BlockStatement code = method.code
 		nameAndTypeMapping.each { paramName, localNameAndType ->
-			code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, localNameAndType.type, new VariableExpression(paramName)))
+			code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, localNameAndType.type, new VariableExpression(paramName, localNameAndType.type)))
 		}
 	}
 	
@@ -88,7 +88,9 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 			return nameAndTypeMapping.containsKey(expression.name)
 		}
 		def replaceWithLocalVariable = { expression ->
-			new VariableExpression(nameAndTypeMapping[expression.name].name)
+
+            def nameAndType = nameAndTypeMapping[expression.name]
+            AstHelper.createVariableReference(nameAndType)
 		}
 		def replacer = new ASTNodesReplacer(when: whenParam, replaceWith: replaceWithLocalVariable)
 		replacer.replaceIn(method.code)
