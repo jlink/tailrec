@@ -2,7 +2,7 @@ package groovyx.transform.tailrec
 
 class TailRecursiveCompiledStaticallyTest extends GroovyShellTestCase {
 
-	void testSimpleStaticAndStaticallyCompiledRecursiveMethod() {
+	void _testSimpleStaticAndStaticallyCompiledRecursiveMethod() {
 		def target = evaluate("""
             import groovyx.transform.TailRecursive
             import groovy.transform.CompileStatic

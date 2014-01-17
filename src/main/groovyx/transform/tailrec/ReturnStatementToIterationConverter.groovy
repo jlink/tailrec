@@ -20,8 +20,9 @@ class ReturnStatementToIterationConverter {
 		BlockStatement result = new BlockStatement()
 		result.statementLabel = statement.statementLabel
 		recursiveCall.arguments.expressions.eachWithIndex { Expression expression, index ->
-			def argName = positionMapping[index]
+			def argName = positionMapping[index].name
 			def tempName = "_${argName}_"
+            def tempType = positionMapping[index].type //todo: Use for creating variable
 			tempMapping[argName] = tempName
 			def tempDeclaration = AstHelper.createVariableAlias(tempName, argName)
 			tempDeclarations[tempName] = tempDeclaration

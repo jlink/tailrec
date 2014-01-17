@@ -67,45 +67,46 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 	private void transformNonVoidMethodToIteration(MethodNode method) {
 		fillInMissingReturns(method)
 		wrapMethodBodyWithWhileLoop(method)
-		Map nameMapping, positionMapping
-		(nameMapping, positionMapping) = parameterMappingFor(method)
-		replaceAllAccessToParams(method, nameMapping)
-		addLocalVariablesForAllParameters(method, nameMapping) //must happen after replacing access to params
+		def (nameAndTypeMapping, positionMapping) = parameterMappingFor(method)
+		replaceAllAccessToParams(method, nameAndTypeMapping)
+		addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
 		replaceAllRecursiveReturnsWithIteration(method, positionMapping)
 	}
 	
-	void addLocalVariablesForAllParameters(MethodNode method, Map nameMapping) {
+	void addLocalVariablesForAllParameters(MethodNode method, Map nameAndTypeMapping) {
+        println nameAndTypeMapping //todo
 		BlockStatement code = method.code
-		nameMapping.each { paramName, localName ->
-			code.statements.add(0, AstHelper.createVariableDefinition(localName, new VariableExpression(paramName)))
+		nameAndTypeMapping.each { paramName, localNameAndType ->
+			code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, new VariableExpression(paramName)))
 		}
 	}
 	
-	void replaceAllAccessToParams(MethodNode method, Map nameMapping) {
+	void replaceAllAccessToParams(MethodNode method, Map nameAndTypeMapping) {
 		def whenParam = { expression ->
 			if (! (expression instanceof VariableExpression)) {
 				return false
 			}
-			return nameMapping.containsKey(expression.name)
+			return nameAndTypeMapping.containsKey(expression.name)
 		}
 		def replaceWithLocalVariable = { expression ->
-			new VariableExpression(nameMapping[expression.name])
+			new VariableExpression(nameAndTypeMapping[expression.name].name)
 		}
 		def replacer = new ASTNodesReplacer(when: whenParam, replaceWith: replaceWithLocalVariable)
 		replacer.replaceIn(method.code)
 	}
 
 	def parameterMappingFor(MethodNode method) {
-		def nameMapping = [:]
+		def nameAndTypeMapping = [:]
 		def positionMapping = [:]
 		BlockStatement code = method.code
 		method.parameters.eachWithIndex { Parameter param, index ->
 			def paramName = param.name
+            def paramType = param.type
 			def localName = '_' + paramName + '_'
-			nameMapping[paramName] = localName
-			positionMapping[index] = localName
+			nameAndTypeMapping[paramName] = [name: localName, type: paramType]
+			positionMapping[index] = [name: localName, type: paramType]
 		}
-		return [nameMapping, positionMapping]
+		return [nameAndTypeMapping, positionMapping]
 	}
 	
 	private replaceAllRecursiveReturnsWithIteration(MethodNode method, Map positionMapping) {
