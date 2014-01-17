@@ -1,4 +1,5 @@
 build
+bin
 out
 .gradle
 tailrec.i*
