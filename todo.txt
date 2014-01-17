@@ -1,5 +1,6 @@
 TODO:
 - Check if it works with @CompileStatic and make it work if it doesn't
+- Check if it works with @TypeChecked
 - Replace call.method.text: get the "method" Expression which is a ConstantExpression containing the method name as a String value.
 - fill in returns for if-then-else, switch, and other non-expressions which do return a value if they are last in a method
 - handle recursive calls in some expressions like ternary operator
