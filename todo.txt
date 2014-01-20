@@ -1,10 +1,9 @@
 TODO:
-- Replace call.method.text: get the "method" Expression which is a ConstantExpression containing the method name as a String value.
 - fill in returns for if-then-else, switch, and other non-expressions which do return a value if they are last in a method
 - handle recursive calls in some expressions like ternary operator
-- refine recursiveness detection: match arg types, check for overloads and overrides.
-- Add annotation (@NotTailRecursive?) for calls that are not direct tail-calls
+- refine recursiveness testing: match arg types, check for overloads and overrides.
+- Add annotation (@NotTailRecursive?) for method calls that are not direct tail-calls
 - Exclude final parameters from copying to local var
 - Exclude parameters that are just "reentered" into recursive call from copying to local var
-- The whole void method branch, iff it makes sense.
+- The whole void method branch, which makes sense for event loops and alike.
  
