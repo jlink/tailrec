@@ -1,6 +1,7 @@
 TODO:
-- fill in returns for if-then-else, switch, and other non-expressions which do return a value if they are last in a method
-- handle recursive calls in some expressions like ternary operator
+- Done by ReturnAdder? fill in returns for if-then-else, switch, and other non-expressions which do return a value if they are last in a method
+- Elvis-Operator: Same as Ternary-Operator
+- Spaceship-Operator?
 - refine recursiveness testing: match arg types, check for overloads and overrides.
 - Add annotation (@NotTailRecursive?) for method calls that are not direct tail-calls
 - Exclude final parameters from copying to local var
