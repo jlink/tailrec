@@ -68,6 +68,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             return (expression.expression instanceof TernaryExpression)
         }
         def replaceWithIfStatement = { expression ->
+            println "###### " + expression.dump()
             ternaryToIfStatement.convert(expression)
         }
         def replacer = new ASTNodesReplacer(when: whenReturnWithTernary, replaceWith: replaceWithIfStatement)

@@ -193,6 +193,30 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.countDownWithTernary(100) == 0
     }
 
+    /*
+        Is covered by Ternary Operator measures b/c ElvisOperatorExpression is subclass of TernaryOperatorExpression
+     */
+    void testNestedRecursiveElvisOperator() {
+        // for loops can have "continue" thus the while-iteration's continue might not work
+        def target = evaluate('''
+			import groovyx.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				def countDownWithElvis(int number) {
+				    if (number == 0)
+                        (true) ?: countDownWithElvis(number - 1)
+                    else
+                        (false) ?: countDownWithElvis(number - 1)
+				}
+			}
+			new TargetClass()
+		''')
+
+        assert target.countDownWithElvis(0) == true
+        assert target.countDownWithElvis(9) == true
+        assert target.countDownWithElvis(100) == true
+    }
+
 
     void testRecursiveCallInTryCatch() {
         // for loops can have "continue" thus the while-iteration's continue might not work
