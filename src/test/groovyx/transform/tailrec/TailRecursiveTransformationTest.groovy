@@ -134,7 +134,6 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	}
 
 	void testRecursiveFunctionWithReturnInForLoop() {
-		// for loops can have "continue" thus the while-iteration's continue might not work
 		def target = evaluate('''
 			import groovyx.transform.TailRecursive
 			class TargetClass {
@@ -173,7 +172,6 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	}
 
     void testNestedRecursiveTernaryOperator() {
-        // for loops can have "continue" thus the while-iteration's continue might not work
         def target = evaluate('''
 			import groovyx.transform.TailRecursive
 			class TargetClass {
@@ -197,7 +195,6 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         Is covered by Ternary Operator measures b/c ElvisOperatorExpression is subclass of TernaryOperatorExpression
      */
     void testNestedRecursiveElvisOperator() {
-        // for loops can have "continue" thus the while-iteration's continue might not work
         def target = evaluate('''
 			import groovyx.transform.TailRecursive
 			class TargetClass {
@@ -219,7 +216,6 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 
     void testRecursiveCallInTryCatch() {
-        // for loops can have "continue" thus the while-iteration's continue might not work
         def target = evaluate('''
 			import groovyx.transform.TailRecursive
 			class TargetClass {
