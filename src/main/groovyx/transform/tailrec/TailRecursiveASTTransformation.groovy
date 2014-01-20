@@ -10,11 +10,11 @@ import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.classgen.ReturnAdder
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.transform.ASTTransformation
+import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
 @GroovyASTTransformation(phase=CompilePhase.CANONICALIZATION)
-class TailRecursiveASTTransformation implements ASTTransformation {
+class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
 	private static final Class MY_CLASS = TailRecursive.class;
 	private static final ClassNode MY_TYPE = new ClassNode(MY_CLASS);
@@ -24,11 +24,7 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 
 	@Override
 	public void visit(ASTNode[] nodes, SourceUnit source) {
-		if (!nodes) return;
-		if (!nodes[0]) return;
-		if (!nodes[1]) return;
-		if (!(nodes[0] instanceof AnnotationNode)) return;
-		if (!(nodes[1] instanceof MethodNode)) return;
+        init(nodes, source);
 
 		MethodNode method = nodes[1]
 		if (!hasRecursiveMethodCalls(method)) {
@@ -39,7 +35,7 @@ class TailRecursiveASTTransformation implements ASTTransformation {
     returnAdder.visitMethod(method)
     ternaryHack(method)
 		transformToIteration(method)
-		checkAllRecursiveCallsHaveBeenTransformed(method)
+		ensureAllRecursiveCallsHaveBeenTransformed(method)
 	}
 
   void ternaryHack(MethodNode methodNode) {
@@ -61,7 +57,7 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 	}
 
 	private void transformVoidMethodToIteration(MethodNode method) {
-		throwException(method: method, message: "void methods are not supported yet!")
+        addError("Void methods are not supported yet", method)
 	}
 
 	private void transformNonVoidMethodToIteration(MethodNode method) {
@@ -136,14 +132,10 @@ class TailRecursiveASTTransformation implements ASTTransformation {
 		new ReturnStatementFiller().fill(method)
 	}
 
-	private void checkAllRecursiveCallsHaveBeenTransformed(MethodNode method) {
+	private void ensureAllRecursiveCallsHaveBeenTransformed(MethodNode method) {
 		if (hasRecursiveMethodCalls(method)) {
-			throwException(method: method, message: "not all recursive calls could be transformed!")
-		}
-	}
-
-	private throwException(Map params) {
-		throw new RuntimeException(transformationDescription(params.method) + ": ${params.message}")
+            addError("Not all recursive calls could be transformed.", method)
+        }
 	}
 
 	private def transformationDescription(MethodNode method) {

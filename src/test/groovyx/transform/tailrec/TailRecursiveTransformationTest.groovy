@@ -1,5 +1,7 @@
 package groovyx.transform.tailrec
 
+import org.codehaus.groovy.control.CompilationFailedException
+
 class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testIgnoreMethodsWithoutRecursiveCall() {
@@ -32,7 +34,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	}
 
 	void testThrowExceptionIfNotAllRecursiveCallsCanBeTransformed() {
-		shouldFail(RuntimeException) { evaluate("""
+		shouldFail(CompilationFailedException) { evaluate("""
             import groovyx.transform.TailRecursive
             class TargetClass {
             	@TailRecursive
@@ -44,7 +46,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	}
 
 	void testThrowExceptionIfNotAllStaticRecursiveCallsCanBeTransformed() {
-		shouldFail(RuntimeException) { evaluate("""
+		shouldFail(CompilationFailedException) { evaluate("""
             import groovyx.transform.TailRecursive
             class TargetClass {
             	@TailRecursive
