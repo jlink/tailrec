@@ -192,4 +192,26 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.countDownWithTernary(9) == 0
         assert target.countDownWithTernary(100) == 0
     }
+
+
+    void testRecursiveCallInTryCatch() {
+        // for loops can have "continue" thus the while-iteration's continue might not work
+        def target = evaluate('''
+			import groovyx.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				int countDownInTryCatch(int number) {
+				    try {
+                        (number == 0) ? 0 : countDownInTryCatch(number - 1)
+				    } catch (Exception e) {}
+				    finally {}
+				}
+			}
+			new TargetClass()
+		''')
+
+        assert target.countDownInTryCatch(0) == 0
+        assert target.countDownInTryCatch(9) == 0
+        assert target.countDownInTryCatch(100) == 0
+    }
 }

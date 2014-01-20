@@ -7,8 +7,6 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
-import org.codehaus.groovy.ast.stmt.ExpressionStatement
-import org.codehaus.groovy.ast.stmt.IfStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.classgen.ReturnAdder
 import org.codehaus.groovy.control.CompilePhase
@@ -23,7 +21,6 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(MY_CLASS);
     static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage()
     private HasRecursiveCalls hasRecursiveCalls = new HasRecursiveCalls()
-    private ReturnStatementFiller returnStatementFiller = new ReturnStatementFiller()
     private TernaryToIfStatementConverter ternaryToIfStatement = new TernaryToIfStatementConverter()
 
 
@@ -54,7 +51,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     }
 
     private void transformNonVoidMethodToIteration(MethodNode method) {
-        fillInMissingReturns(method)
+        addMissingDefaultReturnStatement(method)
         replaceReturnsWithTernariesToIfStatements(method)
         wrapMethodBodyWithWhileLoop(method)
         def (nameAndTypeMapping, positionMapping) = parameterMappingFor(method)
@@ -136,8 +133,8 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         new InWhileLoopWrapper().wrap(method)
     }
 
-    private void fillInMissingReturns(MethodNode method) {
-        returnStatementFiller.fill(method)
+    private void addMissingDefaultReturnStatement(MethodNode method) {
+        new ReturnAdder().visitMethod(method)
     }
 
     private void ensureAllRecursiveCallsHaveBeenTransformed(MethodNode method) {
