@@ -1,6 +1,7 @@
 package groovyx.transform.tailrec
 
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 
@@ -28,7 +29,10 @@ class RecursivenessTester {
 	public boolean isRecursive(MethodNode method, MethodCallExpression call) {
 		if (!isCallToThis(call))
 			return false
-		if (call.method.text != method.name)
+        // Could be a GStringExpression
+        if (! (call.method instanceof ConstantExpression))
+            return false
+		if (call.method.value != method.name)
 			return false
 		methodParamsMatchCallArgs(method, call)
 	}

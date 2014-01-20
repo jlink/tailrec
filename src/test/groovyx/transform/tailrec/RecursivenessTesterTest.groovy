@@ -169,6 +169,42 @@ class RecursivenessTesterTest {
 		assert !tester.isRecursive(method: method, call: innerCall)
 	}
 
+    @Test
+    public void callWithGStringMethodNameIsNotConsideredRecursive() {
+        /*
+         public void myMethod() {}
+         */
+        def method = new AstBuilder().buildFromSpec {
+            method('myMethod', ACC_PUBLIC, Void.TYPE) {
+                parameters {}
+                exceptions {}
+                block {
+                }
+            }
+        }[0]
+
+        /*
+         "$methodName"();
+         */
+        def innerCall = new AstBuilder().buildFromSpec {
+            methodCall {
+                variable "this"
+                gString '$methodName', {
+                    strings {
+                        constant ''
+                        constant ''
+                    }
+                    values {
+                        variable 'methodName'
+                    }
+                }
+                argumentList {}
+            }
+        }[0]
+
+        assert !tester.isRecursive(method: method, call: innerCall)
+    }
+
 	@Test
 	public void callOnDifferentTarget() {
 		/*
@@ -319,4 +355,5 @@ class RecursivenessTesterTest {
 
 		assert !tester.isRecursive(method: method, call: innerCall)
 	}
+
 }
