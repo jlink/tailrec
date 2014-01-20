@@ -23,7 +23,9 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(MY_CLASS);
     static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage()
     private HasRecursiveCalls hasRecursiveCalls = new HasRecursiveCalls()
-    private ReturnAdder returnAdder = new ReturnAdder()
+    private ReturnStatementFiller returnStatementFiller = new ReturnStatementFiller()
+    private TernaryToIfStatementConverter ternaryToIfStatement = new TernaryToIfStatementConverter()
+
 
     @Override
     public void visit(ASTNode[] nodes, SourceUnit source) {
@@ -35,20 +37,8 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             return;
         }
         println(transformationDescription(method) + ": transform recursive calls to iteration.")
-        returnAdder.visitMethod(method)
-        ternaryHack(method)
         transformToIteration(method)
         ensureAllRecursiveCallsHaveBeenTransformed(method)
-    }
-
-    void ternaryHack(MethodNode methodNode) {
-        if (!(methodNode.code instanceof BlockStatement)) return
-        def last = methodNode.code.statements[-1]
-        if (!(last instanceof ExpressionStatement || last instanceof ReturnStatement)) return
-        if (!(last.expression instanceof TernaryExpression)) return
-        TernaryExpression te = last.expression
-        IfStatement ifs = new IfStatement(te.booleanExpression, new ReturnStatement(te.trueExpression), new ReturnStatement(te.falseExpression))
-        methodNode.code.statements[-1] = ifs
     }
 
     void transformToIteration(MethodNode method) {
@@ -65,11 +55,27 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
     private void transformNonVoidMethodToIteration(MethodNode method) {
         fillInMissingReturns(method)
+        replaceReturnsWithTernariesToIfStatements(method)
         wrapMethodBodyWithWhileLoop(method)
         def (nameAndTypeMapping, positionMapping) = parameterMappingFor(method)
         replaceAllAccessToParams(method, nameAndTypeMapping)
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
+    }
+
+    private void replaceReturnsWithTernariesToIfStatements(MethodNode method) {
+        def whenReturnWithTernary = { expression ->
+            if (!(expression instanceof ReturnStatement)) {
+                return false
+            }
+            return (expression.expression instanceof TernaryExpression)
+        }
+        def replaceWithIfStatement = { expression ->
+            ternaryToIfStatement.convert(expression)
+        }
+        def replacer = new ASTNodesReplacer(when: whenReturnWithTernary, replaceWith: replaceWithIfStatement)
+        replacer.replaceIn(method.code)
+
     }
 
     void addLocalVariablesForAllParameters(MethodNode method, Map nameAndTypeMapping) {
@@ -87,7 +93,6 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             return nameAndTypeMapping.containsKey(expression.name)
         }
         def replaceWithLocalVariable = { expression ->
-
             def nameAndType = nameAndTypeMapping[expression.name]
             AstHelper.createVariableReference(nameAndType)
         }
@@ -132,7 +137,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     }
 
     private void fillInMissingReturns(MethodNode method) {
-        new ReturnStatementFiller().fill(method)
+        returnStatementFiller.fill(method)
     }
 
     private void ensureAllRecursiveCallsHaveBeenTransformed(MethodNode method) {
@@ -140,9 +145,6 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         remainingRecursiveCalls.each {
             addError("Recursive call could not be transformed.", it)
         }
-//        if (hasRecursiveMethodCalls(method)) {
-//            addError("Not all recursive calls could be transformed.", method)
-//        }
     }
 
     private def transformationDescription(MethodNode method) {

@@ -12,7 +12,6 @@ import org.junit.Test
 
 class ReturnStatementToIterationConverterTest {
 
-
     @Test
     public void oneConstantParameter() {
         ReturnStatement statement = new AstBuilder().buildFromSpec {

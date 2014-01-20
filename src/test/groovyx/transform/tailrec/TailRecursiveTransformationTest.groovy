@@ -153,4 +153,44 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 		assert target.countDownWithFor(9) == 1
 		assert target.countDownWithFor(100) == 1
 	}
+
+	void testRecursiveFunctionWithTernaryOperator() {
+		// for loops can have "continue" thus the while-iteration's continue might not work
+		def target = evaluate('''
+			import groovyx.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				int countDownWithTernary(int number) {
+				    (number == 0) ? number : countDownWithTernary(number - 1)
+				}
+			}
+			new TargetClass()
+		''')
+
+		assert target.countDownWithTernary(0) == 0
+		assert target.countDownWithTernary(9) == 0
+		assert target.countDownWithTernary(100) == 0
+	}
+
+    //Todo: This test hangs
+    void _testNestedRecursiveTernaryOperator() {
+        // for loops can have "continue" thus the while-iteration's continue might not work
+        def target = evaluate('''
+			import groovyx.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				int countDownWithTernary(int number) {
+				    if (number == 1)
+                        (true) ? 1 : countDownWithTernary(number - 1)
+                    else
+                        (false) ? 1 : countDownWithTernary(number - 1)
+				}
+			}
+			new TargetClass()
+		''')
+
+        assert target.countDownWithTernary(0) == 0
+        assert target.countDownWithTernary(9) == 0
+        assert target.countDownWithTernary(100) == 0
+    }
 }

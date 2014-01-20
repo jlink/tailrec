@@ -5,6 +5,7 @@ import org.codehaus.groovy.classgen.ReturnAdder
 
 class ReturnStatementFiller {
 
+    //todo: Currently this only adds the default return but it should fill it in all important places
     void fill(MethodNode method) {
         addMissingReturnStatements(method)
     }
