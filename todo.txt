@@ -2,6 +2,8 @@ TODO:
 - switch-case. Problem: continue does not work as expected
 - Check if it works with varargs
 - Check if it works with default params
+- Javadoc for TailRecursive annotation
+- Groovy-Documentation
 - refine recursiveness testing: match arg types, check for overloads and overrides.
 - Exclude final parameters from copying to local var
 - Exclude parameters that are just "reentered" into recursive call from copying to local var
