@@ -1,5 +1,10 @@
 TODO:
 - Handle all expressions in ASTNodesReplacer correctly and test them
+- switch-case. Problem: continue does not work as expected
+- Check if it works with varargs
+- Check if it works with default params
+- Javadoc for TailRecursive annotation
+- Groovy-Documentation
 - refine recursiveness testing: match arg types, check for overloads and overrides.
 - Add annotation (@NotTailRecursive?) for method calls that are not direct tail-calls
 - Exclude final parameters from copying to local var
