@@ -46,12 +46,12 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 	}
 
     public void visitSwitch(SwitchStatement statement) {
-        replaceIfNecessary(statement.expression) {statement.expression = it}
+        replaceInnerExpressionIfNecessary(statement)
         super.visitSwitch(statement)
     }
 
     public void visitCaseStatement(CaseStatement statement) {
-        replaceIfNecessary(statement.expression) {statement.expression = it}
+        replaceInnerExpressionIfNecessary(statement)
         super.visitCaseStatement(statement)
     }
 
@@ -184,42 +184,48 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 
 	//todo: test
 	public void visitAssertStatement(AssertStatement statement) {
-		statement.getBooleanExpression().visit(this);
-		statement.getMessageExpression().visit(this);
+        replaceIfNecessary(statement.booleanExpression) {statement.booleanExpression = it}
+        replaceIfNecessary(statement.messageExpression) {statement.messageExpression= it}
+        super.visitAssertStatement(statement)
 	}
 
 	//todo: test
 	public void visitSynchronizedStatement(SynchronizedStatement statement) {
-		statement.getExpression().visit(this);
-		statement.getCode().visit(this);
+        replaceInnerExpressionIfNecessary(statement)
+        super.visitSynchronizedStatement(statement)
 	}
 
 	//todo: test
 	public void visitRangeExpression(RangeExpression expression) {
-		expression.getFrom().visit(this);
-		expression.getTo().visit(this);
+        replaceIfNecessary(expression.from) {expression.from = it}
+        replaceIfNecessary(expression.to) {expression.to = it}
+        super.visitRangeExpression(expression)
 	}
 
 	//todo: test
 	public void visitMethodPointerExpression(MethodPointerExpression expression) {
-		expression.getExpression().visit(this);
-		expression.getMethodName().visit(this);
+        replaceInnerExpressionIfNecessary(expression)
+        replaceIfNecessary(expression.methodName) {expression.methodName = it}
+        super.visitMethodPointerExpression(expression)
 	}
 
 	//todo: test
 	public void visitPropertyExpression(PropertyExpression expression) {
-		expression.getObjectExpression().visit(this);
-		expression.getProperty().visit(this);
+        replaceIfNecessary(expression.objectExpression) {expression.objectExpression = it}
+        replaceIfNecessary(expression.property) {expression.property = it}
+        super.visitPropertyExpression(expression)
 	}
 
 	//todo: test
 	public void visitAttributeExpression(AttributeExpression expression) {
-		expression.getObjectExpression().visit(this);
-		expression.getProperty().visit(this);
+        replaceIfNecessary(expression.objectExpression) {expression.objectExpression = it}
+        replaceIfNecessary(expression.property) {expression.property = it}
+        super.visitAttributeExpression(expression)
 	}
 
 	//todo: test
 	public void visitCatchStatement(CatchStatement statement) {
-		statement.getCode().visit(this);
+        replaceIfNecessary(statement.variable) {statement.variable = it}
+        super.visitCatchStatement(statement)
 	}
 }
