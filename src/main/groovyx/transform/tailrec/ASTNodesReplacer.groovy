@@ -15,7 +15,7 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 		root.visit(this)
 	}
 
-	public void visitBlockStatement(BlockStatement block) {
+    public void visitBlockStatement(BlockStatement block) {
 		block.statements.clone().eachWithIndex { Statement statement, index ->
 			replaceIfNecessary(statement) {block.statements[index] = it}
 		}
@@ -121,7 +121,8 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 
 	//todo: test
 	public void visitBooleanExpression(BooleanExpression expression) {
-		replaceInnerExpressionIfNecessary(expression)
+        //BooleanExpression.expression is readonly
+        //replaceInnerExpressionIfNecessary(expression)
 		super.visitBooleanExpression(expression);
 	}
 

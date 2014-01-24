@@ -1,6 +1,6 @@
 TODO:
+- Arguments in Boolean- and NotExpression cannot be replaced
 - Check if it works with varargs
-- Check if it works with default params
 - Javadoc for TailRecursive annotation
 - Groovy-Documentation
 - The whole void method branch, which makes sense for event loops and alike.
