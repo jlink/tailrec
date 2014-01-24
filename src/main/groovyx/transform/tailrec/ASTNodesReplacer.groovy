@@ -127,7 +127,8 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 
 	//todo: test
 	public void visitNotExpression(NotExpression expression) {
-		replaceInnerExpressionIfNecessary(expression)
+        //NotExpression.expression is readonly
+		//replaceInnerExpressionIfNecessary(expression)
 		super.visitNotExpression(expression);
 	}
 
