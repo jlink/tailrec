@@ -45,7 +45,18 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 		super.visitMethodCallExpression(call);
 	}
 
-	protected void visitListOfExpressions(List<? extends Expression> list) {
+    public void visitSwitch(SwitchStatement statement) {
+        replaceIfNecessary(statement.expression) {statement.expression = it}
+        super.visitSwitch(statement)
+    }
+
+    public void visitCaseStatement(CaseStatement statement) {
+        replaceIfNecessary(statement.expression) {statement.expression = it}
+        super.visitCaseStatement(statement)
+    }
+
+
+    protected void visitListOfExpressions(List<? extends Expression> list) {
 		list.clone().eachWithIndex { Expression expression, index ->
 			replaceIfNecessary(expression) {list[index] = it}
 		}
@@ -63,7 +74,7 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 		replaceIfNecessary(statement.expression) {statement.expression = it}
 	}
 
-	//todo: test
+    //todo: test
 	public void visitExpressionStatement(ExpressionStatement statement) {
 		replaceIfNecessary(statement.expression) {statement.expression = it}
 		super.visitExpressionStatement(statement);
@@ -169,21 +180,6 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 		replaceIfNecessary(expression.trueExpression) {expression.trueExpression = it}
 		replaceIfNecessary(expression.falseExpression) {expression.falseExpression = it}
 		super.visitTernaryExpression(expression);
-	}
-
-	//todo: test
-	public void visitSwitch(SwitchStatement statement) {
-		statement.getExpression().visit(this);
-		for (CaseStatement caseStatement : statement.getCaseStatements()) {
-			caseStatement.visit(this);
-		}
-		statement.getDefaultStatement().visit(this);
-	}
-
-	//todo: test
-	public void visitCaseStatement(CaseStatement statement) {
-		statement.getExpression().visit(this);
-		statement.getCode().visit(this);
 	}
 
 	//todo: test

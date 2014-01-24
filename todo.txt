@@ -1,5 +1,5 @@
 TODO:
-- switch-case. Problem: continue does not work in case/default statement
+- Handle all expressions in ASTNodesReplacer correctly and test them
 - refine recursiveness testing: match arg types, check for overloads and overrides.
 - Add annotation (@NotTailRecursive?) for method calls that are not direct tail-calls
 - Exclude final parameters from copying to local var

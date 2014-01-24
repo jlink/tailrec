@@ -2,9 +2,11 @@ package groovyx.transform.tailrec
 
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.CaseStatement
 import org.codehaus.groovy.ast.stmt.EmptyStatement
 import org.codehaus.groovy.ast.stmt.IfStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
+import org.codehaus.groovy.ast.stmt.SwitchStatement
 import org.codehaus.groovy.syntax.Token
 import org.junit.Test
 
@@ -155,7 +157,7 @@ class ASTNodesReplacerTest {
 	}
 
 	@Test
-	public void replaceInReturnStatemen() {
+	public void replaceInReturnStatement() {
 		def toReplace = new ConstantExpression("old")
 		def replacement = new ConstantExpression("new")
 		def returnStatement = new ReturnStatement(toReplace)
@@ -167,11 +169,41 @@ class ASTNodesReplacerTest {
 		assert returnStatement.expression == replacement
 	}
 
-	def aReturnStatement(value) {
-		new ReturnStatement(new ConstantExpression(value))
+    @Test
+    public void replaceExpressionInSwitchStatement() {
+        def toReplace = aVariable("old")
+        def replacement = aVariable("new")
+        def switchStatement = new SwitchStatement(toReplace)
+
+        def replacements = [(toReplace):replacement]
+        def replacer = new ASTNodesReplacer(replace: replacements)
+        replacer.replaceIn(switchStatement)
+
+        assert switchStatement.expression == replacement
+    }
+
+    @Test
+    public void replaceExpressionInCaseStatement() {
+        def toReplace = aConstant("old")
+        def replacement = aConstant("new")
+        def caseStatement = new CaseStatement(toReplace, new EmptyStatement())
+
+        def replacements = [(toReplace):replacement]
+        def replacer = new ASTNodesReplacer(replace: replacements)
+        replacer.replaceIn(caseStatement)
+
+        assert caseStatement.expression == replacement
+    }
+
+    def aReturnStatement(value) {
+		new ReturnStatement(aConstant(value))
 	}
 
-	def aBooleanExpression(value) {
+    def aConstant(value) {
+        new ConstantExpression(value)
+    }
+
+    def aBooleanExpression(value) {
 		new BooleanExpression(new ConstantExpression(value))
 	}
 

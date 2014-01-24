@@ -235,8 +235,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.countDownInTryCatch(100) == 0
     }
 
-    //Todo: Test hangs
-    void _testRecursiveCallInSwitchStatement() {
+    void testRecursiveCallInSwitchStatement() {
         def target = evaluate('''
 			import groovyx.transform.TailRecursive
 			class TargetClass {

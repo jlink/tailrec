@@ -58,6 +58,8 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         replaceAllAccessToParams(method, nameAndTypeMapping)
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
+
+//        ASTDumper.dump(method)
     }
 
     private void replaceReturnsWithTernariesToIfStatements(MethodNode method) {
@@ -68,7 +70,6 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             return (expression.expression instanceof TernaryExpression)
         }
         def replaceWithIfStatement = { expression ->
-            println "###### " + expression.dump()
             ternaryToIfStatement.convert(expression)
         }
         def replacer = new ASTNodesReplacer(when: whenReturnWithTernary, replaceWith: replaceWithIfStatement)
