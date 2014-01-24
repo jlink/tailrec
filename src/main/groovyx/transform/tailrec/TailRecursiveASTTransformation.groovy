@@ -57,6 +57,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         def (nameAndTypeMapping, positionMapping) = parameterMappingFor(method)
         replaceAllAccessToParams(method, nameAndTypeMapping)
         replaceAllAccessToParamsInBooleanExpression(method, nameAndTypeMapping)
+        replaceAllAccessToParamsInNotExpression(method, nameAndTypeMapping)
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
 
@@ -101,7 +102,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     }
 
     /**
-     * Boolean- and NotExpressions need special handling since inner field expression is readonly
+     * BooleanExpressions need special handling since inner field expression is readonly
      */
     void replaceAllAccessToParamsInBooleanExpression(MethodNode method, Map nameAndTypeMapping) {
         def whenParamInNotExpression = { expression ->
@@ -117,6 +118,31 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         def replaceWithLocalVariableInNotExpression = { expression ->
             def nameAndType = nameAndTypeMapping[expression.expression.name]
             new BooleanExpression(AstHelper.createVariableReference(nameAndType))
+        }
+        def replacer = new ASTNodesReplacer(when: whenParamInNotExpression, replaceWith: replaceWithLocalVariableInNotExpression)
+        replacer.replaceIn(method.code)
+    }
+
+    /**
+     * NotExpressions (within BooleanExpressions) need special handling since inner field expression is readonly
+     */
+    void replaceAllAccessToParamsInNotExpression(MethodNode method, Map nameAndTypeMapping) {
+        def whenParamInNotExpression = { expression ->
+            if (!(expression instanceof BooleanExpression)) {
+                return false
+            }
+            Expression inner = expression.expression
+            if (!(inner instanceof NotExpression)) {
+                return false
+            }
+            if (!(inner.expression instanceof VariableExpression)) {
+                return false
+            }
+            return nameAndTypeMapping.containsKey(inner.expression.name)
+        }
+        def replaceWithLocalVariableInNotExpression = { expression ->
+            def nameAndType = nameAndTypeMapping[expression.expression.expression.name]
+            new BooleanExpression(new NotExpression(AstHelper.createVariableReference(nameAndType)))
         }
         def replacer = new ASTNodesReplacer(when: whenParamInNotExpression, replaceWith: replaceWithLocalVariableInNotExpression)
         replacer.replaceIn(method.code)

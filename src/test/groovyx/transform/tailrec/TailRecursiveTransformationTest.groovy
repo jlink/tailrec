@@ -273,4 +273,23 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.stringSize('a') == 1
         assert target.stringSize('abcdef') == 6
     }
+
+    void testRecursiveCallWithVariableInNotExpression() {
+        def target = evaluate('''
+			import groovyx.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				int stringSize(String s, int size = 0) {
+				    if (!s)
+				        return size
+				    return stringSize(s.substring(1), ++size)
+				}
+			}
+			new TargetClass()
+		''')
+
+        assert target.stringSize('') == 0
+        assert target.stringSize('a') == 1
+        assert target.stringSize('abcdef') == 6
+    }
 }

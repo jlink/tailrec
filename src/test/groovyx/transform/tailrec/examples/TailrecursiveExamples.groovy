@@ -35,9 +35,8 @@ class TailRecursiveExamples {
     void dynamicallyCompiledStringSize() {
         def target = new DynamicTargetClass()
         assert target.stringSize("") == 0
-//        assert target.stringSize("a") == 1
-//        assert target.stringSize("abcdefghijklmnopqrstuvwxyz") == 26
-
+        assert target.stringSize("a") == 1
+        assert target.stringSize("abcdefghijklmnopqrstuvwxyz") == 26
     }
 }
 
