@@ -1,5 +1,5 @@
 TODO:
-- Arguments in Boolean- and NotExpression cannot be replaced
+- Arguments in NotExpression cannot be replaced
 - Check if it works with varargs
 - Javadoc for TailRecursive annotation
 - Groovy-Documentation

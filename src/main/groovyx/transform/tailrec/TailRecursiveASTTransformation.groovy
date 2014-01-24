@@ -56,7 +56,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         wrapMethodBodyWithWhileLoop(method)
         def (nameAndTypeMapping, positionMapping) = parameterMappingFor(method)
         replaceAllAccessToParams(method, nameAndTypeMapping)
-//        replaceAllAccessToParamsInBooleanExpression(method, nameAndTypeMapping)
+        replaceAllAccessToParamsInBooleanExpression(method, nameAndTypeMapping)
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
 
@@ -105,15 +105,18 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
      */
     void replaceAllAccessToParamsInBooleanExpression(MethodNode method, Map nameAndTypeMapping) {
         def whenParamInNotExpression = { expression ->
-            if (!(expression instanceof NotExpression)) {
+            if (!(expression instanceof BooleanExpression)) {
                 return false
             }
-            return nameAndTypeMapping.containsKey(expression.expression.name)
+            Expression inner = expression.expression
+            if (!(inner instanceof VariableExpression)) {
+                return false
+            }
+            return nameAndTypeMapping.containsKey(inner.name)
         }
         def replaceWithLocalVariableInNotExpression = { expression ->
             def nameAndType = nameAndTypeMapping[expression.expression.name]
-            println "##############" + nameAndType
-            new NotExpression(AstHelper.createVariableReference(nameAndType))
+            new BooleanExpression(AstHelper.createVariableReference(nameAndType))
         }
         def replacer = new ASTNodesReplacer(when: whenParamInNotExpression, replaceWith: replaceWithLocalVariableInNotExpression)
         replacer.replaceIn(method.code)
