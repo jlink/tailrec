@@ -38,6 +38,19 @@ class TailRecursiveExamples {
         assert target.stringSize("a") == 1
         assert target.stringSize("abcdefghijklmnopqrstuvwxyz") == 26
     }
+
+    @Test
+    void dynamicallyCompiledReduce() {
+        def target = new DynamicTargetClass()
+        def plus = { Number x, Number y -> x + y }
+        assert target.reduce(0, plus, ) == 0
+        assert target.reduce(0, plus, 1) == 1
+        assert target.reduce(0, plus, 1, 5, 10) == 16
+        assert target.reduce(99, plus, 1, 5, 10, 98) == 213
+
+        def numbersFrom1to1000 = (1..1000).collect{new BigInteger(it)}.toArray()
+        assert target.reduce(new BigInteger(1), {BigInteger a, BigInteger b -> a * b}, numbersFrom1to1000).bitCount() == 3788
+    }
 }
 
 
@@ -75,5 +88,14 @@ class DynamicTargetClass {
         if (!aString)
             return size
         stringSize(aString.substring(1), ++size)
+    }
+
+    @TailRecursive
+    def reduce(startValue, function, Object...elements) {
+        if (elements.length == 0)
+            return startValue
+        def newValue = function(startValue, elements[0])
+        def rest = elements.drop(1)
+        return reduce(newValue, function, rest)
     }
 }
