@@ -1,6 +1,6 @@
-package groovyx.transform.tailrec
+package org.codehaus.groovy.transform.tailrec
 
-import groovyx.transform.TailRecursive
+import groovy.transform.TailRecursive
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode

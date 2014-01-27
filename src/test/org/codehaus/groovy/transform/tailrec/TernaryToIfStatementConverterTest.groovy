@@ -1,8 +1,7 @@
-package groovyx.transform.tailrec
+package org.codehaus.groovy.transform.tailrec
 
 import org.codehaus.groovy.ast.builder.AstAssert
 import org.codehaus.groovy.ast.builder.AstBuilder
-import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.IfStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.junit.Test

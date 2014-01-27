@@ -1,4 +1,4 @@
-package groovyx.transform.tailrec
+package org.codehaus.groovy.transform.tailrec
 
 import org.codehaus.groovy.control.CompilationFailedException
 
@@ -6,7 +6,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testIgnoreMethodsWithoutRecursiveCall() {
 		def target = evaluate("""
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             class TargetClass {
             	@TailRecursive
             	void aVoidMethod() {
@@ -35,7 +35,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testThrowExceptionIfNotAllRecursiveCallsCanBeTransformed() {
 		shouldFail(CompilationFailedException) { evaluate("""
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             class TargetClass {
             	@TailRecursive
             	int aNonTailRecursiveMethod() {
@@ -47,7 +47,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testThrowExceptionIfNotAllStaticRecursiveCallsCanBeTransformed() {
 		shouldFail(CompilationFailedException) { evaluate("""
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             class TargetClass {
             	@TailRecursive
             	static int aNonTailRecursiveMethod() {
@@ -59,7 +59,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testSimpleRecursiveMethod() {
 		def target = evaluate("""
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             class TargetClass {
             	@TailRecursive
             	int countDown(int zahl) {
@@ -76,7 +76,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	
 	void testSimpleStaticRecursiveMethod() {
 		def target = evaluate("""
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             class TargetClass {
             	@TailRecursive
             	static int staticCountDown(int zahl) {
@@ -93,7 +93,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	
 	void testRecursiveFunctionWithTwoParameters() {
 		def target = evaluate('''
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             class TargetClass {
 				@TailRecursive
 				long sumUp(long number, long sum) {
@@ -113,7 +113,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testRecursiveFunctionWithTwoRecursiveCalls() {
 		def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int countDown(int number) {
@@ -135,7 +135,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testRecursiveFunctionWithReturnInForLoop() {
 		def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int countDownWithFor(int number) {
@@ -156,7 +156,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 	void testRecursiveFunctionWithTernaryOperator() {
 		// for loops can have "continue" thus the while-iteration's continue might not work
 		def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int countDownWithTernary(int number) {
@@ -173,7 +173,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
     void testNestedRecursiveTernaryOperator() {
         def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int countDownWithTernary(int number) {
@@ -196,7 +196,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
      */
     void testNestedRecursiveElvisOperator() {
         def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				def countDownWithElvis(int number) {
@@ -217,7 +217,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
     void testRecursiveCallInTryCatch() {
         def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int countDownInTryCatch(int number) {
@@ -237,7 +237,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
     void testRecursiveCallInSwitchStatement() {
         def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int countDownInSwitch(int number) {
@@ -257,7 +257,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
     void testRecursiveCallWithVariableInBooleanExpression() {
         def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int stringSize(String s, int size = 0) {
@@ -276,7 +276,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
     void testRecursiveCallWithVariableInNotExpression() {
         def target = evaluate('''
-			import groovyx.transform.TailRecursive
+			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
 				int stringSize(String s, int size = 0) {

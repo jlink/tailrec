@@ -1,4 +1,4 @@
-package groovyx.transform.tailrec
+package org.codehaus.groovy.transform.tailrec
 
 import org.codehaus.groovy.ast.builder.AstBuilder
 import org.junit.Test

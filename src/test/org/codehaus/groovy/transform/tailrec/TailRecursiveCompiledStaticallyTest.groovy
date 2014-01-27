@@ -1,4 +1,4 @@
-package groovyx.transform.tailrec
+package org.codehaus.groovy.transform.tailrec
 
 import org.codehaus.groovy.control.CompilationFailedException
 
@@ -6,7 +6,7 @@ class TailRecursiveCompiledStaticallyTest extends GroovyShellTestCase {
 
     void testStaticallyCompiledRecursiveMethod() {
         def target = evaluate("""
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             import groovy.transform.CompileStatic
 
             @CompileStatic
@@ -26,7 +26,7 @@ class TailRecursiveCompiledStaticallyTest extends GroovyShellTestCase {
 
     void testRecursiveMethodWhichCannotBeStaticallyCompiled() {
         shouldFail(CompilationFailedException) { evaluate("""
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             import groovy.transform.CompileStatic
 
             @CompileStatic
@@ -44,7 +44,7 @@ class TailRecursiveCompiledStaticallyTest extends GroovyShellTestCase {
 
     void testTypeCheckedRecursiveMethod() {
         def target = evaluate('''
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             import groovy.transform.TypeChecked
 
             @TypeChecked
@@ -67,7 +67,7 @@ class TailRecursiveCompiledStaticallyTest extends GroovyShellTestCase {
 
     void testStaticallyCompiledRecursiveFunctionWithTwoParameters() {
         def target = evaluate('''
-            import groovyx.transform.TailRecursive
+            import groovy.transform.TailRecursive
             import groovy.transform.CompileStatic
 
             @CompileStatic

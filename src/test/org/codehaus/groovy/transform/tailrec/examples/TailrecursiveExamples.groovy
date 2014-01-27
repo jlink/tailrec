@@ -1,7 +1,7 @@
-package groovyx.transform.tailrec.examples
+package org.codehaus.groovy.transform.tailrec.examples
 
 import groovy.transform.CompileStatic
-import groovyx.transform.TailRecursive
+import groovy.transform.TailRecursive
 import org.junit.Test
 
 class TailRecursiveExamples {

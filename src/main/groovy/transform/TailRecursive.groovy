@@ -1,4 +1,4 @@
-package groovyx.transform
+package groovy.transform
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass
 
@@ -29,6 +29,6 @@ import java.lang.annotation.Target
 */
 @Retention(RetentionPolicy.SOURCE)
 @Target([ElementType.METHOD])
-@GroovyASTTransformationClass(["groovyx.transform.tailrec.TailRecursiveASTTransformation"])
+@GroovyASTTransformationClass(["org.codehaus.groovy.transform.tailrec.TailRecursiveASTTransformation"])
 public @interface TailRecursive {
 }

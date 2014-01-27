@@ -1,10 +1,6 @@
-package groovyx.transform.tailrec
+package org.codehaus.groovy.transform.tailrec
 
-import groovy.inspect.TextTreeNodeMaker
-import groovy.inspect.swingui.AstNodeToScriptAdapter
 import groovy.inspect.swingui.AstNodeToScriptVisitor
-import groovy.inspect.swingui.ScriptToTreeNodeAdapter
-import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.MethodNode
 
 class ASTDumper {
