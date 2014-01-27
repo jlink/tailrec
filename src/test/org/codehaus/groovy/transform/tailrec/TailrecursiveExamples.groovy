@@ -1,4 +1,4 @@
-package org.codehaus.groovy.transform.tailrec.examples
+package org.codehaus.groovy.transform.tailrec
 
 import groovy.transform.CompileStatic
 import groovy.transform.TailRecursive
