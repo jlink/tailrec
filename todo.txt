@@ -1,5 +1,5 @@
 TODO:
-- Javadoc for TailRecursive annotation
+- Extract Non-Void-Branch from TailRecursiveASTTransformation into class of its own
 - Groovy-Documentation
 - The whole void method branch, which makes sense for event loops and alike.
 - refine recursiveness testing: match arg types, check for overloads and overrides.

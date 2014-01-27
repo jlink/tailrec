@@ -9,6 +9,7 @@ import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.classgen.ReturnAdder
+import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.AbstractASTTransformation
@@ -28,7 +29,6 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage()
     private HasRecursiveCalls hasRecursiveCalls = new HasRecursiveCalls()
     private TernaryToIfStatementConverter ternaryToIfStatement = new TernaryToIfStatementConverter()
-    private VariableToScopeAdder variablesToScopeAdder = new VariableToScopeAdder()
 
 
     @Override
@@ -41,23 +41,23 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             return;
         }
         println(transformationDescription(method) + ": transform recursive calls to iteration.")
-        transformToIteration(method)
+        transformToIteration(method, source)
         ensureAllRecursiveCallsHaveBeenTransformed(method)
     }
 
-    void transformToIteration(MethodNode method) {
+    void transformToIteration(MethodNode method, SourceUnit source) {
         if (method.isVoidMethod()) {
-            transformVoidMethodToIteration(method)
+            transformVoidMethodToIteration(method, source)
         } else {
-            transformNonVoidMethodToIteration(method)
+            transformNonVoidMethodToIteration(method, source)
         }
     }
 
-    private void transformVoidMethodToIteration(MethodNode method) {
+    private void transformVoidMethodToIteration(MethodNode method, SourceUnit source) {
         addError("Void methods are not supported yet", method)
     }
 
-    private void transformNonVoidMethodToIteration(MethodNode method) {
+    private void transformNonVoidMethodToIteration(MethodNode method, SourceUnit source) {
         addMissingDefaultReturnStatement(method)
         replaceReturnsWithTernariesToIfStatements(method)
         wrapMethodBodyWithWhileLoop(method)
@@ -67,7 +67,12 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         replaceAllAccessToParamsInNotExpression(method, nameAndTypeMapping)
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
-        ASTDumper.dump(method)
+        repairVariableScopes(source, method)
+//        ASTDumper.dump(method)
+    }
+
+    def repairVariableScopes(SourceUnit source, MethodNode method) {
+        new VariableScopeVisitor(source).visitClass(method.declaringClass)
     }
 
     private void replaceReturnsWithTernariesToIfStatements(MethodNode method) {
@@ -89,9 +94,6 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         BlockStatement code = method.code
         nameAndTypeMapping.each { paramName, localNameAndType ->
             code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, localNameAndType.type, new VariableExpression(paramName, localNameAndType.type)))
-            //Add new variable to all embedded variableScopes in BlockStatements
-            def newVariable = new VariableExpression(localNameAndType.name, localNameAndType.type)
-            variablesToScopeAdder.addVariable(code, newVariable)
         }
     }
 

@@ -55,12 +55,12 @@ class TailRecursiveExamples {
         assert target.reduce(new BigInteger(1), {BigInteger a, BigInteger b -> a * b}, numbersFrom1to1000).bitCount() == 3788
     }
 
-    //@Test
+    @Test
     void cpsFactorial() {
         def target = new ContinuousPassingStyle()
         assert target.factorial(1) == 1
         assert target.factorial(3) == 6
-        assert StaticTargetClass.factorial(20) == 2432902008176640000L
+        assert target.factorial(20) == 2432902008176640000L
     }
 }
 
@@ -116,7 +116,7 @@ class DynamicTargetClass {
  */
 class ContinuousPassingStyle {
     @TailRecursive
-    long factorial(int number, Closure continuation = {it}) {
+    long factorial(long number, Closure continuation = {it}) {
         if (number <= 1)
             return continuation(1)
         return factorial(number - 1, {continuation(it * number)})

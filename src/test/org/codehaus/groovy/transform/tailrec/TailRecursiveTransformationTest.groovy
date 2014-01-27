@@ -308,8 +308,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 				    argsFromClosure << c()
 				    if (number == 0)
 				        return -1
-				    return countDown(--number)
-//				    return countDown(c() - 1)
+				    return countDown(c() - 1)
 				}
 			}
 			new TargetClass()
@@ -319,12 +318,12 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.argsFromClosure == [2, 1, 0]
     }
 
-    void _testContinuousPassingStyle() {
+    void testContinuousPassingStyle() {
         def target = evaluate('''
 			import groovy.transform.TailRecursive
 			class TargetClass {
 				@TailRecursive
-                long factorial(int number, Closure continuation = {return it}) {
+                long factorial(int number, Closure continuation = {it}) {
                     if (number <= 1)
                         return continuation(1)
                     return factorial(number - 1, { x ->
