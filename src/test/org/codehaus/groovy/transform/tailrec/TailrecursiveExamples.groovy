@@ -52,7 +52,7 @@ class TailRecursiveExamples {
         assert target.reduce(new BigInteger(1), {BigInteger a, BigInteger b -> a * b}, numbersFrom1to1000).bitCount() == 3788
     }
 
-    @Test
+//    @Test
     void cpsFactorial() {
         def target = new ContinuousPassingStyle()
         assert target.factorial(1) == 1

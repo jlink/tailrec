@@ -14,7 +14,8 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
-@GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
+@GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
+//@GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
     private static final Class MY_CLASS = TailRecursive.class;
@@ -22,6 +23,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage()
     private HasRecursiveCalls hasRecursiveCalls = new HasRecursiveCalls()
     private TernaryToIfStatementConverter ternaryToIfStatement = new TernaryToIfStatementConverter()
+    private VariableToScopeAdder variablesToScopeAdder = new VariableToScopeAdder()
 
 
     @Override
@@ -60,7 +62,6 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         replaceAllAccessToParamsInNotExpression(method, nameAndTypeMapping)
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
-
         ASTDumper.dump(method)
     }
 
@@ -83,6 +84,9 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         BlockStatement code = method.code
         nameAndTypeMapping.each { paramName, localNameAndType ->
             code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, localNameAndType.type, new VariableExpression(paramName, localNameAndType.type)))
+            //Add new variable to all embedded variableScopes in BlockStatements
+            def newVariable = new VariableExpression(localNameAndType.name, localNameAndType.type)
+            variablesToScopeAdder.addVariable(code, newVariable)
         }
     }
 

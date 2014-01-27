@@ -293,7 +293,30 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.stringSize('abcdef') == 6
     }
 
-    void testContinuousPassingStyle() {
+    void testVariableScopes() {
+        def target = evaluate('''
+			import groovy.transform.TailRecursive
+			class TargetClass {
+			    def argsFromClosure = []
+				@TailRecursive
+				int countDown(int number) {
+				    int oops = number
+				    def c = { -> number }
+				    argsFromClosure << c()
+				    if (number == 0)
+				        return -1
+				    return countDown(--number)
+//				    return countDown(c() - 1)
+				}
+			}
+			new TargetClass()
+		''')
+
+        assert target.countDown(2) == -1
+        assert target.argsFromClosure == [2, 1, 0]
+    }
+
+    void _testContinuousPassingStyle() {
         def target = evaluate('''
 			import groovy.transform.TailRecursive
 			class TargetClass {
