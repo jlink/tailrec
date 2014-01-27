@@ -6,17 +6,15 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 
 /**
- * 
- * @author link
  *
  * Test if a method call is recursive if called within a given method node.
  * Tries to handle static calls as well.
  * 
  * Currently known simplifications:
  * Does not check for matching argument types but only considers the number of arguments.
- * Does not handle recursive call that make use of default values
  * Does not check for matching return types; even void and any object type are considered to be compatible.
  * 
+ * @author Johannes Link
  */
 class RecursivenessTester {
 	public boolean isRecursive(params) {

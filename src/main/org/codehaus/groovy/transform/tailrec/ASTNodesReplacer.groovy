@@ -5,6 +5,13 @@ import org.codehaus.groovy.ast.CodeVisitorSupport
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.*
 
+/**
+ * Generic tool for replacing parts of an AST
+ *
+ * It takes care to handle expressions as well since those are needed a few time for @TailRecursive
+ *
+ * @author Johannes Link
+ */
 class ASTNodesReplacer extends CodeVisitorSupport {
 
 	Map<ASTNode, ASTNode> replace = [:]

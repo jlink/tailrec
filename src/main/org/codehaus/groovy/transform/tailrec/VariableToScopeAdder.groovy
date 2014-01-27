@@ -6,6 +6,9 @@ import org.codehaus.groovy.ast.Variable
 import org.codehaus.groovy.ast.VariableScope
 import org.codehaus.groovy.ast.stmt.BlockStatement
 
+/**
+ * @author Johannes Link
+ */
 class VariableToScopeAdder extends CodeVisitorSupport {
 
     private Variable newVariable

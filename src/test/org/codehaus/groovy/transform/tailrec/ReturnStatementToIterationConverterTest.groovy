@@ -10,6 +10,9 @@ import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.junit.Test
 
+/**
+ * @author Johannes Link
+ */
 class ReturnStatementToIterationConverterTest {
 
     @Test

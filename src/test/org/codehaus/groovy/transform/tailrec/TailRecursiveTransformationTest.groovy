@@ -2,6 +2,9 @@ package org.codehaus.groovy.transform.tailrec
 
 import org.codehaus.groovy.control.CompilationFailedException
 
+/**
+ * @author Johannes Link
+ */
 class TailRecursiveTransformationTest extends GroovyShellTestCase {
 
 	void testIgnoreMethodsWithoutRecursiveCall() {

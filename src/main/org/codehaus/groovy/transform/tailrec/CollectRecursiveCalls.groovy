@@ -5,6 +5,9 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 
+/**
+ * @author Johannes Link
+ */
 class CollectRecursiveCalls extends CodeVisitorSupport {
 	MethodNode method
 	List recursiveCalls = []

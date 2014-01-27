@@ -8,6 +8,11 @@ import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.syntax.Token
 
+/**
+ * Helping to create a few standard AST constructs
+ *
+ * @author Johannes Link
+ */
 class AstHelper {
 
 	static final Token ASSIGN = Token.newSymbol("=", -1, -1)

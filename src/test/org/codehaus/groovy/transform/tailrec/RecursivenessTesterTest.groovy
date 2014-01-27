@@ -13,6 +13,9 @@ import static org.objectweb.asm.Opcodes.ACC_PUBLIC
 import static org.objectweb.asm.Opcodes.ACC_STATIC
 
 
+/**
+ * @author Johannes Link
+ */
 class RecursivenessTesterTest {
 
 	RecursivenessTester tester

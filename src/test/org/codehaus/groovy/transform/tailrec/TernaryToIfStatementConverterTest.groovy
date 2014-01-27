@@ -6,6 +6,9 @@ import org.codehaus.groovy.ast.stmt.IfStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.junit.Test
 
+/**
+ * @author Johannes Link
+ */
 class TernaryToIfStatementConverterTest {
 
     @Test

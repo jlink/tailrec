@@ -5,6 +5,9 @@ import org.codehaus.groovy.ast.stmt.IfStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.Statement
 
+/**
+ * @author Johannes Link
+ */
 class TernaryToIfStatementConverter {
 
     Statement convert(ReturnStatement statementWithInnerTernaryExpression) {

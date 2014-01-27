@@ -7,6 +7,9 @@ import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.WhileStatement
 
+/**
+ * @author Johannes Link
+ */
 class InWhileLoopWrapper {
 	
 	final static String LOOP_LABEL = '_RECUR_HERE_'

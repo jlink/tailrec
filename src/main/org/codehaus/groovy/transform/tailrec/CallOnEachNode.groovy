@@ -8,6 +8,9 @@ import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.Statement
 
+/**
+ * @author Johannes Link
+ */
 class CallOnEachNode extends CodeVisitorSupport {
 
 	private Closure closure

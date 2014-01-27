@@ -10,6 +10,9 @@ import org.codehaus.groovy.ast.stmt.SwitchStatement
 import org.codehaus.groovy.syntax.Token
 import org.junit.Test
 
+/**
+ * @author Johannes Link
+ */
 class ASTNodesReplacerTest {
 
 	static final Token ASSIGN = Token.newSymbol("=", -1, -1)

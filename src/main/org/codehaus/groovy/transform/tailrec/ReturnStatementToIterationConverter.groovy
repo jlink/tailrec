@@ -3,6 +3,9 @@ package org.codehaus.groovy.transform.tailrec
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.*
 
+/**
+ * @author Johannes Link
+ */
 class ReturnStatementToIterationConverter {
 
     Statement convert(ReturnStatement statement, Map positionMapping) {

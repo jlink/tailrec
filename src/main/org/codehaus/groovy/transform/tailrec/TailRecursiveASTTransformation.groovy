@@ -14,6 +14,11 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
+/**
+ * Handles generation of code for the @TailRecursive annotation.
+ *
+ * @author Johannes Link
+ */
 @GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
 //@GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 class TailRecursiveASTTransformation extends AbstractASTTransformation {

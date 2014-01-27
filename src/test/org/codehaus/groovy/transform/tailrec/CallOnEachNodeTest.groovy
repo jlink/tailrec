@@ -5,6 +5,9 @@ import org.junit.Test
 
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC
 
+/**
+ * @author Johannes Link
+ */
 class CallOnEachNodeTest {
 
 	def visitor = new CallOnEachNode()
