@@ -292,4 +292,24 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.stringSize('a') == 1
         assert target.stringSize('abcdef') == 6
     }
+
+    void testContinuousPassingStyle() {
+        def target = evaluate('''
+			import groovy.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+                long factorial(int number, Closure continuation = {return it}) {
+                    if (number <= 1)
+                        return continuation(1)
+                    return factorial(number - 1, { x ->
+                        return continuation(x * number)
+                    })
+                }
+            }
+			new TargetClass()
+		''')
+
+        assert target.factorial(1) == 1
+        assert target.factorial(2) == 2
+    }
 }

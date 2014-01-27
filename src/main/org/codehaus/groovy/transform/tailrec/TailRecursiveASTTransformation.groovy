@@ -61,7 +61,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
 
-//        ASTDumper.dump(method)
+        ASTDumper.dump(method)
     }
 
     private void replaceReturnsWithTernariesToIfStatements(MethodNode method) {
