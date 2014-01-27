@@ -37,10 +37,10 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
         MethodNode method = nodes[1]
         if (!hasRecursiveMethodCalls(method)) {
-            println(transformationDescription(method) + " skipped: No recursive calls detected.")
+            System.err.println(transformationDescription(method) + " skipped: No recursive calls detected.")
             return;
         }
-        println(transformationDescription(method) + ": transform recursive calls to iteration.")
+        //println(transformationDescription(method) + ": transform recursive calls to iteration.")
         transformToIteration(method, source)
         ensureAllRecursiveCallsHaveBeenTransformed(method)
     }
