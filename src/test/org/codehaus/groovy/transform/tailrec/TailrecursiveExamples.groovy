@@ -51,6 +51,14 @@ class TailRecursiveExamples {
         def numbersFrom1to1000 = (1..1000).collect{new BigInteger(it)}.toArray()
         assert target.reduce(new BigInteger(1), {BigInteger a, BigInteger b -> a * b}, numbersFrom1to1000).bitCount() == 3788
     }
+
+    @Test
+    void cpsFactorial() {
+        def target = new ContinuousPassingStyle()
+        assert target.factorial(1) == 1
+        assert target.factorial(3) == 6
+        assert StaticTargetClass.factorial(20) == 2432902008176640000L
+    }
 }
 
 
@@ -59,7 +67,7 @@ class StaticTargetClass {
 
     @TailRecursive
     static BigInteger factorial(BigInteger number, BigInteger result = 1) {
-        if (number == 1)
+        if (number <= 1)
             return result
         return factorial(number - 1, number * result)
     }
@@ -97,5 +105,17 @@ class DynamicTargetClass {
         def newValue = function(startValue, elements[0])
         def rest = elements.drop(1)
         return reduce(newValue, function, rest)
+    }
+}
+
+/**
+ * A way to make more functions tail recursive
+ */
+class ContinuousPassingStyle {
+    @TailRecursive
+    long factorial(int number, Closure continuation = {it}) {
+        if (number <= 1)
+            return continuation(1)
+        return factorial(number - 1, {continuation(it * number)})
     }
 }
