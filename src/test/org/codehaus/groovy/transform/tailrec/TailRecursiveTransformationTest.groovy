@@ -318,7 +318,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.argsFromClosure == [2, 1, 0]
     }
 
-    void testContinuousPassingStyle() {
+    void testSimpleContinuousPassingStyle() {
         def target = evaluate('''
 			import groovy.transform.TailRecursive
 			class TargetClass {
@@ -337,4 +337,28 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.factorial(1) == 1
         assert target.factorial(2) == 2
     }
+
+    void testNestedContinuousPassingStyleIsRejected() {
+//        shouldFail(CompilationFailedException) {
+            evaluate('''
+			import groovy.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+                int fibonacci(int n, Closure c = { it }) {
+                    if (n == 0)
+                        return c(1)
+                    if (n == 1)
+                        return c(1)
+                    def next = { r1 ->
+                        return fibonacci(n - 2) { r2 ->
+                            return c(r1 + r2)
+                        }
+                    }
+                    return fibonacci(n - 1, next)
+                }
+            }
+			new TargetClass()
+		''') }
+//    }
+
 }

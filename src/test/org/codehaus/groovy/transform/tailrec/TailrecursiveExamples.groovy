@@ -46,13 +46,13 @@ class TailRecursiveExamples {
     void dynamicallyCompiledReduce() {
         def target = new DynamicTargetClass()
         def plus = { Number x, Number y -> x + y }
-        assert target.reduce(0, plus, ) == 0
+        assert target.reduce(0, plus,) == 0
         assert target.reduce(0, plus, 1) == 1
         assert target.reduce(0, plus, 1, 5, 10) == 16
         assert target.reduce(99, plus, 1, 5, 10, 98) == 213
 
-        def numbersFrom1to1000 = (1..1000).collect{new BigInteger(it)}.toArray()
-        assert target.reduce(new BigInteger(1), {BigInteger a, BigInteger b -> a * b}, numbersFrom1to1000).bitCount() == 3788
+        def numbersFrom1to1000 = (1..1000).collect { new BigInteger(it) }.toArray()
+        assert target.reduce(new BigInteger(1), { BigInteger a, BigInteger b -> a * b }, numbersFrom1to1000).bitCount() == 3788
     }
 
     @Test
@@ -61,6 +61,12 @@ class TailRecursiveExamples {
         assert target.factorial(1) == 1
         assert target.factorial(3) == 6
         assert target.factorial(20) == 2432902008176640000L
+    }
+
+    @Test
+    void cpsFibonacci() {
+        def target = new ContinuousPassingStyle()
+        assert (0..7).collect { target.fibonacci(it) } == [1, 1, 2, 3, 5, 8, 13, 21]
     }
 }
 
@@ -102,7 +108,7 @@ class DynamicTargetClass {
     }
 
     @TailRecursive
-    def reduce(startValue, function, Object...elements) {
+    def reduce(startValue, function, Object... elements) {
         if (elements.length == 0)
             return startValue
         def newValue = function(startValue, elements[0])
@@ -116,9 +122,26 @@ class DynamicTargetClass {
  */
 class ContinuousPassingStyle {
     @TailRecursive
-    long factorial(long number, Closure continuation = {it}) {
+    long factorial(long number, Closure continuation = { it }) {
         if (number <= 1)
             return continuation(1)
-        return factorial(number - 1, {continuation(it * number)})
+        return factorial(number - 1, { continuation(it * number) })
+    }
+
+    /**
+     * CPS style with recursive calls in returned closures is currently not supported
+     */
+//    @TailRecursive
+    int fibonacci(int n, Closure c = { it }) {
+        if (n == 0)
+            return c(1)
+        if (n == 1)
+            return c(1)
+        def next = { r1 ->
+            return fibonacci(n - 2) { r2 ->
+                return c(r1 + r2)
+            }
+        }
+        return fibonacci(n - 1, next)
     }
 }
