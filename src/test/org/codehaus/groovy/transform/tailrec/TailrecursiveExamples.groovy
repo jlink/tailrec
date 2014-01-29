@@ -63,11 +63,6 @@ class TailRecursiveExamples {
         assert target.factorial(20) == 2432902008176640000L
     }
 
-    @Test
-    void cpsFibonacci() {
-        def target = new ContinuousPassingStyle()
-        assert (0..7).collect { target.fibonacci(it) } == [1, 1, 2, 3, 5, 8, 13, 21]
-    }
 }
 
 
@@ -126,22 +121,5 @@ class ContinuousPassingStyle {
         if (number <= 1)
             return continuation(1)
         return factorial(number - 1, { continuation(it * number) })
-    }
-
-    /**
-     * CPS style with recursive calls in returned closures is currently not supported
-     */
-//    @TailRecursive
-    int fibonacci(int n, Closure c = { it }) {
-        if (n == 0)
-            return c(1)
-        if (n == 1)
-            return c(1)
-        def next = { r1 ->
-            return fibonacci(n - 2) { r2 ->
-                return c(r1 + r2)
-            }
-        }
-        return fibonacci(n - 1, next)
     }
 }

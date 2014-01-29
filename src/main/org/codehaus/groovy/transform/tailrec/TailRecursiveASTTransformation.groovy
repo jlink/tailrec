@@ -39,12 +39,21 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             System.err.println(transformationDescription(method) + " skipped: No recursive calls detected.")
             return;
         }
+        ensureNoRecursiveCallsInEmbeddedClosures(method)
         //println(transformationDescription(method) + ": transform recursive calls to iteration.")
         transformToIteration(method, source)
         ensureAllRecursiveCallsHaveBeenTransformed(method)
     }
 
-    void transformToIteration(MethodNode method, SourceUnit source) {
+    private void ensureNoRecursiveCallsInEmbeddedClosures(MethodNode method) {
+        def tester = new HasRecursiveCallsInEmbeddedClosures()
+        if (tester.test(method)) {
+            addError("Recursive calls in embedded closures are not supported", tester.guiltyExpression)
+        }
+    }
+
+
+    private void transformToIteration(MethodNode method, SourceUnit source) {
         if (method.isVoidMethod()) {
             transformVoidMethodToIteration(method, source)
         } else {
@@ -67,10 +76,10 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
         repairVariableScopes(source, method)
-        ASTDumper.dump(method)
+//        ASTDumper.dump(method)
     }
 
-    def repairVariableScopes(SourceUnit source, MethodNode method) {
+    private void repairVariableScopes(SourceUnit source, MethodNode method) {
         new VariableScopeVisitor(source).visitClass(method.declaringClass)
     }
 
@@ -89,14 +98,14 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
     }
 
-    void addLocalVariablesForAllParameters(MethodNode method, Map nameAndTypeMapping) {
+    private void addLocalVariablesForAllParameters(MethodNode method, Map nameAndTypeMapping) {
         BlockStatement code = method.code
         nameAndTypeMapping.each { paramName, localNameAndType ->
             code.statements.add(0, AstHelper.createVariableDefinition(localNameAndType.name, localNameAndType.type, new VariableExpression(paramName, localNameAndType.type)))
         }
     }
 
-    void replaceAllAccessToParams(MethodNode method, Map nameAndTypeMapping) {
+    private void replaceAllAccessToParams(MethodNode method, Map nameAndTypeMapping) {
         def whenParam = { expression ->
             if (!(expression instanceof VariableExpression)) {
                 return false
@@ -114,7 +123,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     /**
      * BooleanExpressions need special handling since inner field expression is readonly
      */
-    void replaceAllAccessToParamsInBooleanExpression(MethodNode method, Map nameAndTypeMapping) {
+    private void replaceAllAccessToParamsInBooleanExpression(MethodNode method, Map nameAndTypeMapping) {
         def whenParamInNotExpression = { expression ->
             if (!(expression instanceof BooleanExpression)) {
                 return false
@@ -136,7 +145,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     /**
      * NotExpressions (within BooleanExpressions) need special handling since inner field expression is readonly
      */
-    void replaceAllAccessToParamsInNotExpression(MethodNode method, Map nameAndTypeMapping) {
+    private void replaceAllAccessToParamsInNotExpression(MethodNode method, Map nameAndTypeMapping) {
         def whenParamInNotExpression = { expression ->
             if (!(expression instanceof BooleanExpression)) {
                 return false
@@ -158,7 +167,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         replacer.replaceIn(method.code)
     }
 
-    def parameterMappingFor(MethodNode method) {
+    private  parameterMappingFor(MethodNode method) {
         def nameAndTypeMapping = [:]
         def positionMapping = [:]
         BlockStatement code = method.code
@@ -205,7 +214,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         }
     }
 
-    private def transformationDescription(MethodNode method) {
+    private transformationDescription(MethodNode method) {
         "$MY_TYPE_NAME transformation on '${method.declaringClass}.${method.name}(${method.parameters.size()} params)'"
     }
 

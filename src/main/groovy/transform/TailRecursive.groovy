@@ -30,8 +30,9 @@ import java.lang.annotation.Target
  *
  * Known shortcomings:
  * <ul>
- * <li>Only non-void methods are currently being handled.
+ * <li>Only non-void methods are currently being handled. Void methods will fail compilation.
  * <li>Only direct recursion (calling the exact same method again) is supported.
+ * <li>Recursive calls in embedded closures are not supported and will fail compilation.
  * <li>All method calls with the same name and same number of arguments are considered to be recursive; no argument type matching happens.
  * <li>Probably many unrecognized edge cases.
  * </ul>
