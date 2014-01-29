@@ -8,6 +8,8 @@ import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.syntax.Token
 
+import java.lang.reflect.Modifier
+
 /**
  * Helping to create a few standard AST constructs
  *
@@ -18,12 +20,15 @@ class AstHelper {
 	static final Token ASSIGN = Token.newSymbol("=", -1, -1)
 	static final Token PLUS = Token.newSymbol("+", -1, -1)
 
-	static ExpressionStatement createVariableDefinition(String variableName, ClassNode variableType, Expression value ) {
-		new ExpressionStatement(new DeclarationExpression(new VariableExpression(variableName, variableType), AstHelper.ASSIGN, value))
+	static ExpressionStatement createVariableDefinition(String variableName, ClassNode variableType, Expression value, boolean variableShouldBeFinal = false ) {
+        def newVariable = new VariableExpression(variableName, variableType)
+        if (variableShouldBeFinal)
+            newVariable.setModifiers(Modifier.FINAL)
+        new ExpressionStatement(new DeclarationExpression(newVariable, AstHelper.ASSIGN, value))
 	}
 
 	static ExpressionStatement createVariableAlias(String aliasName, ClassNode variableType, String variableName ) {
-		createVariableDefinition(aliasName, variableType, new VariableExpression(variableName, variableType))
+		createVariableDefinition(aliasName, variableType, new VariableExpression(variableName, variableType), true)
 	}
 
 	static ExpressionStatement createAssignment(String variableName, ClassNode variableType, Expression value ) {

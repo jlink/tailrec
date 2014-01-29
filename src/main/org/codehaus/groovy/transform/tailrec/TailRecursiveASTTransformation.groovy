@@ -20,8 +20,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformation
  *
  * @author Johannes Link
  */
-@GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
-//@GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
+@GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS) //the earliest possible phase
 class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
     private static final Class MY_CLASS = TailRecursive.class;
