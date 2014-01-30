@@ -53,23 +53,13 @@ class ReturnStatementToIterationConverter {
 
     private replaceArgUsageByTempUsage(BinaryExpression binary, tempMapping) {
         def usedTempNames = [] as Set
-        def right = binary.rightExpression
-        def argUsed = { expression ->
-            if (!(expression instanceof VariableExpression)) {
-                return false
-            }
-            if (!tempMapping.containsKey(expression.name)) {
-                return false
-            }
-            return true
+        def expressionToReplaceIn = binary.rightExpression
+        def useTempInstead = { tempNameAndType ->
+            usedTempNames << tempNameAndType.name
+            AstHelper.createVariableReference(tempNameAndType)
         }
-        def useTempInstead = { expression ->
-            def temp = tempMapping[expression.name]
-            usedTempNames << temp.name
-            AstHelper.createVariableReference(temp)
-        }
-        def replacer = new ASTNodesReplacer(when: argUsed, replaceWith: useTempInstead)
-        replacer.replaceIn(right)
+        def replacer = new VariableAccessReplacer(nameAndTypeMapping: tempMapping, replaceBy: useTempInstead)
+        replacer.replaceIn(expressionToReplaceIn)
         return usedTempNames
     }
 }

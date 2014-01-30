@@ -55,7 +55,7 @@ class TailRecursiveExamples {
         assert target.reduce(new BigInteger(1), { BigInteger a, BigInteger b -> a * b }, numbersFrom1to1000).bitCount() == 3788
     }
 
-//    @Test
+    @Test
     void twoDifferentRecursiveCallsInOneMethod() {
         def target = new DynamicTargetClass()
         assert target.enumerate(1,0) == []
@@ -119,7 +119,7 @@ class DynamicTargetClass {
         return reduce(newValue, function, rest)
     }
 
-    //@TailRecursive
+    @TailRecursive
     def enumerate(int lower, int upper, list = []) {
         if (lower > upper)
             return list

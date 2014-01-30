@@ -17,6 +17,7 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 	Map<ASTNode, ASTNode> replace = [:]
 	Closure when = { replace.containsKey it}
 	Closure replaceWith = { replace[it] }
+    List<ASTNode> parents = []
 	
 	void replaceIn(ASTNode root) {
 		root.visit(this)
