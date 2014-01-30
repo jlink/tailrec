@@ -73,6 +73,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         replaceAllAccessToParams(method, nameAndTypeMapping)
         replaceAllAccessToParamsInBooleanExpression(method, nameAndTypeMapping)
         replaceAllAccessToParamsInNotExpression(method, nameAndTypeMapping)
+        replaceAllAccessToParamsInUnaryMinusExpression(method, nameAndTypeMapping)
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
         repairVariableScopes(source, method)
@@ -164,6 +165,28 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             new BooleanExpression(new NotExpression(AstHelper.createVariableReference(nameAndType)))
         }
         def replacer = new ASTNodesReplacer(when: whenParamInNotExpression, replaceWith: replaceWithLocalVariableInNotExpression)
+        replacer.replaceIn(method.code)
+    }
+
+    /**
+     * UnaryMinusExpression need special handling since inner field expression is readonly
+     */
+    private void replaceAllAccessToParamsInUnaryMinusExpression(MethodNode method, Map nameAndTypeMapping) {
+        def whenParamInUnaryMinusExpression = { expression ->
+            if (!(expression instanceof UnaryMinusExpression)) {
+                return false
+            }
+            Expression inner = expression.expression
+            if (!(inner instanceof VariableExpression)) {
+                return false
+            }
+            return nameAndTypeMapping.containsKey(inner.name)
+        }
+        def replaceWithLocalVariableInUnaryMinusExpression = { expression ->
+            def nameAndType = nameAndTypeMapping[expression.expression.name]
+            new UnaryMinusExpression(AstHelper.createVariableReference(nameAndType))
+        }
+        def replacer = new ASTNodesReplacer(when: whenParamInUnaryMinusExpression, replaceWith: replaceWithLocalVariableInUnaryMinusExpression)
         replacer.replaceIn(method.code)
     }
 

@@ -1,4 +1,5 @@
 TODO:
+- Check for other readonly expression fields in expressions (like in UnaryMinusExpression) and treat them specially
 - Groovy-Documentation
 - refine recursiveness testing: match arg types, check for overloads and overrides.
 - Extract Non-Void-Branch from TailRecursiveASTTransformation into class of its own

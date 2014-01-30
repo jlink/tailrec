@@ -55,6 +55,14 @@ class TailRecursiveExamples {
         assert target.reduce(new BigInteger(1), { BigInteger a, BigInteger b -> a * b }, numbersFrom1to1000).bitCount() == 3788
     }
 
+//    @Test
+    void twoDifferentRecursiveCallsInOneMethod() {
+        def target = new DynamicTargetClass()
+        assert target.enumerate(1,0) == []
+        assert target.enumerate(0,0) == [0]
+        assert target.enumerate(1,9) == [-1, 2, -3, 4, -5, 6, -7, 8, -9]
+    }
+
     @Test
     void cpsFactorial() {
         def target = new ContinuousPassingStyle()
@@ -109,6 +117,16 @@ class DynamicTargetClass {
         def newValue = function(startValue, elements[0])
         def rest = elements.drop(1)
         return reduce(newValue, function, rest)
+    }
+
+    //@TailRecursive
+    def enumerate(int lower, int upper, list = []) {
+        if (lower > upper)
+            return list
+        if (lower % 2 == 0)
+            return enumerate(lower + 1, upper, list << lower)
+        else
+            return enumerate(lower + 1, upper, list << -lower)
     }
 }
 

@@ -296,6 +296,25 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.stringSize('abcdef') == 6
     }
 
+    void testRecursiveCallWithVariableInUnaryMinusExpression() {
+        def target = evaluate('''
+			import groovy.transform.TailRecursive
+			class TargetClass {
+				@TailRecursive
+				def enumerateNegative(int downFrom, list = []) {
+				    if (downFrom == 0)
+				        return list
+				    return enumerateNegative(downFrom - 1, list << -downFrom)
+				}
+			}
+			new TargetClass()
+		''')
+
+        assert target.enumerateNegative(0) == []
+        assert target.enumerateNegative(1) == [-1]
+        assert target.enumerateNegative(9) == [-9, -8, -7, -6, -5, -4, -3, -2, -1]
+    }
+
     void testVariableScopes() {
         def target = evaluate('''
 			import groovy.transform.TailRecursive

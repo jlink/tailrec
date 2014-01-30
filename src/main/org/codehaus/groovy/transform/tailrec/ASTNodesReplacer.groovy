@@ -154,7 +154,8 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 
 	//todo: test
 	public void visitUnaryMinusExpression(UnaryMinusExpression expression) {
-		replaceInnerExpressionIfNecessary(expression)
+        //UnaryMinusExpression.expression is readonly
+		//replaceInnerExpressionIfNecessary(expression)
 		super.visitUnaryMinusExpression(expression);
 	}
 
