@@ -122,7 +122,71 @@ class RecursivenessTesterTest {
 		assert !tester.isRecursive(method: method, call: innerCall)
 	}
 
-	@Test
+    @Test
+    public void callWithNonCompatibleArgType() throws Exception {
+        /*
+         public void myMethod(String a, String b) {}
+         */
+        def method = new AstBuilder().buildFromSpec {
+            method('myMethod', ACC_PUBLIC, Void.TYPE) {
+                parameters {
+                    parameter 'a': String.class
+                }
+                exceptions {}
+                block {
+                }
+            }
+        }[0]
+
+        /*
+         this.myMethod("a", "b", "c");
+         */
+        def innerCall = new AstBuilder().buildFromSpec {
+            methodCall {
+                variable "this"
+                constant "myMethod"
+                argumentList {
+                    constant 1
+                }
+            }
+        }[0]
+
+        assert !tester.isRecursive(method: method, call: innerCall)
+    }
+
+    @Test
+    public void callWithArgASubtype() throws Exception {
+        /*
+         public void myMethod(Number a) {}
+         */
+        def method = new AstBuilder().buildFromSpec {
+            method('myMethod', ACC_PUBLIC, Void.TYPE) {
+                parameters {
+                    parameter 'a': Number.class
+                }
+                exceptions {}
+                block {
+                }
+            }
+        }[0]
+
+        /*
+         this.myMethod(1);
+         */
+        def innerCall = new AstBuilder().buildFromSpec {
+            methodCall {
+                variable "this"
+                constant "myMethod"
+                argumentList {
+                    constant 1
+                }
+            }
+        }[0]
+
+        assert !tester.isRecursive(method: method, call: innerCall)
+    }
+
+    @Test
 	public void recursiveCallWithImplicitThis() throws Exception {
 		/*
 		 public void myMethod() {}

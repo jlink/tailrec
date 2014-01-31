@@ -1,5 +1,6 @@
 package org.codehaus.groovy.transform.tailrec
 
+import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
@@ -42,7 +43,12 @@ class RecursivenessTester {
 	}
 	
 	private boolean methodParamsMatchCallArgs(method, call) {
-		method.parameters.size() == call.arguments.expressions.size()
+        if (method.parameters.size() != call.arguments.expressions.size())
+            return false
+        def classNodePairs = [method.parameters*.type, call.arguments*.type].transpose()
+        return classNodePairs.every { ClassNode paramType, ClassNode argType  ->
+            return argType.isDerivedFrom(paramType)
+        }
 	}
 
 	public boolean isRecursive(MethodNode method, StaticMethodCallExpression call) {
