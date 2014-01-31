@@ -65,7 +65,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         addLocalVariablesForAllParameters(method, nameAndTypeMapping) //must happen after replacing access to params
         replaceAllRecursiveReturnsWithIteration(method, positionMapping)
         repairVariableScopes(source, method)
-//        ASTDumper.dump(method)
+        ASTDumper.dump(method)
     }
 
     private void repairVariableScopes(SourceUnit source, MethodNode method) {

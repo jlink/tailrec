@@ -160,7 +160,8 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 
 	//todo: test
 	public void visitSpreadExpression(SpreadExpression expression) {
-		replaceInnerExpressionIfNecessary(expression)
+        //SpreadExpression.expression is readonly
+		//replaceInnerExpressionIfNecessary(expression)
 		super.visitSpreadExpression(expression);
 	}
 
@@ -179,7 +180,8 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 
 	//todo: test
 	public void visitUnaryPlusExpression(UnaryPlusExpression expression) {
-		replaceInnerExpressionIfNecessary(expression)
+        //UnaryPlusExpression.expression is readonly
+		//replaceInnerExpressionIfNecessary(expression)
 		super.visitUnaryPlusExpression(expression);
 	}
 

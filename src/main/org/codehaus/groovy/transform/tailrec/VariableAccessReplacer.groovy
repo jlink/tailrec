@@ -17,9 +17,11 @@ class VariableAccessReplacer {
 
     private void replaceAccessToParams(ASTNode root) {
         replaceAllAccessToParamsInVariableExpressions(root)
-        replaceAllAccessToParamsInBooleanExpression(root)
         replaceAllAccessToParamsInNotExpression(root)
-        replaceAllAccessToParamsInUnaryMinusExpression(root)
+        replaceAllAccessToParamsInInnerExpression(root, BooleanExpression)
+        replaceAllAccessToParamsInInnerExpression(root, UnaryMinusExpression)
+        replaceAllAccessToParamsInInnerExpression(root, UnaryPlusExpression)
+        replaceAllAccessToParamsInInnerExpression(root, SpreadExpression)
     }
 
     private void replaceAllAccessToParamsInVariableExpressions(ASTNode root) {
@@ -40,9 +42,9 @@ class VariableAccessReplacer {
     /**
      * BooleanExpressions need special handling since inner field expression is readonly
      */
-    private void replaceAllAccessToParamsInBooleanExpression(ASTNode root) {
-        def whenParamInNotExpression = { expression ->
-            if (!(expression instanceof BooleanExpression)) {
+    private void replaceAllAccessToParamsInInnerExpression(ASTNode root, Class expressionType) {
+        def whenParamInInnerVariableExpression = { expression ->
+            if (!(expressionType.isInstance(expression))) {
                 return false
             }
             Expression inner = expression.expression
@@ -51,11 +53,11 @@ class VariableAccessReplacer {
             }
             return nameAndTypeMapping.containsKey(inner.name)
         }
-        def replaceWithLocalVariableInNotExpression = { expression ->
+        def replaceWithNewExpression = { expression ->
             def nameAndType = nameAndTypeMapping[expression.expression.name]
-            new BooleanExpression(replaceBy(nameAndType))
+            expressionType.newInstance([replaceBy(nameAndType)].toArray())
         }
-        def replacer = new ASTNodesReplacer(when: whenParamInNotExpression, replaceWith: replaceWithLocalVariableInNotExpression)
+        def replacer = new ASTNodesReplacer(when: whenParamInInnerVariableExpression, replaceWith: replaceWithNewExpression)
         replacer.replaceIn(root)
     }
 
@@ -84,26 +86,5 @@ class VariableAccessReplacer {
         replacer.replaceIn(root)
     }
 
-    /**
-     * UnaryMinusExpression need special handling since inner field expression is readonly
-     */
-    private void replaceAllAccessToParamsInUnaryMinusExpression(ASTNode root) {
-        def whenParamInUnaryMinusExpression = { expression ->
-            if (!(expression instanceof UnaryMinusExpression)) {
-                return false
-            }
-            Expression inner = expression.expression
-            if (!(inner instanceof VariableExpression)) {
-                return false
-            }
-            return nameAndTypeMapping.containsKey(inner.name)
-        }
-        def replaceWithLocalVariableInUnaryMinusExpression = { expression ->
-            def nameAndType = nameAndTypeMapping[expression.expression.name]
-            new UnaryMinusExpression(replaceBy(nameAndType))
-        }
-        def replacer = new ASTNodesReplacer(when: whenParamInUnaryMinusExpression, replaceWith: replaceWithLocalVariableInUnaryMinusExpression)
-        replacer.replaceIn(root)
-    }
 
 }
