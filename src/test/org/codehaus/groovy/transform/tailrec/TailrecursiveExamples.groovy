@@ -58,9 +58,9 @@ class TailRecursiveExamples {
     @Test
     void twoDifferentRecursiveCallsInOneMethod() {
         def target = new DynamicTargetClass()
-        assert target.enumerate(1,0) == []
-        assert target.enumerate(0,0) == [0]
-        assert target.enumerate(1,9) == [-1, 2, -3, 4, -5, 6, -7, 8, -9]
+        assert target.enumerate(1, 0) == []
+        assert target.enumerate(0, 0) == [0]
+        assert target.enumerate(1, 9) == [-1, 2, -3, 4, -5, 6, -7, 8, -9]
     }
 
     @Test
@@ -69,6 +69,18 @@ class TailRecursiveExamples {
         assert target.factorial(1) == 1
         assert target.factorial(3) == 6
         assert target.factorial(20) == 2432902008176640000L
+    }
+
+    @Test
+    void cpsFibonacci() {
+        def target = new ContinuousPassingStyle()
+        assert (0..7).collect { target.fibonacci(it) } == [1, 1, 2, 3, 5, 8, 13, 21]
+    }
+
+    @Test
+    void cpsFibonacciTail() {
+        def target = new ContinuousPassingStyle()
+        assert target.fibonacciTail(2)
     }
 
 }
@@ -139,5 +151,56 @@ class ContinuousPassingStyle {
         if (number <= 1)
             return continuation(1)
         return factorial(number - 1, { continuation(it * number) })
+    }
+
+    /**
+     * Currently this solution does not work with @TailRecursive and will run forever
+     */
+//    @TailRecursive
+    int fibonacci(int n, Closure c = { it }) {
+        if (n == 0)
+            return c(1)
+        if (n == 1)
+            return c(1)
+        def next = { r1 ->
+            return fibonacci(n - 2) { r2 ->
+                return c(r1 + r2)
+            }
+        }
+        return fibonacci(n - 1, next)
+    }
+
+    int fibonacciTail(int n, Closure c = { it }) {
+        Closure _c_ = c
+        Integer _n_ = n
+        recur:
+            while (true) {
+                try {
+                    if (_n_ == 0) {
+                        return _c_.call(1)
+                    }
+                    if (_n_ == 1) {
+                        return _c_.call(1)
+                    }
+                    Closure next = { java.lang.Object r1 ->
+                        java.lang.Integer __n__ = _n_
+                        _n_ = __n__ - 2
+                        groovy.lang.Closure __c__ = _c_
+                        _c_ = { java.lang.Object r2 ->
+                            return __c__.call(r1 + r2)
+                        }
+                        throw InWhileLoopWrapper.LOOP_EXCEPTION
+                    }
+                    java.lang.Integer __n__ = _n_
+                    _n_ = __n__ - 1
+                    _c_ = next
+                    continue recur
+                }
+                catch (GotoRecurHereException ignore) {
+                    continue recur
+                }
+                finally {
+                }
+            }
     }
 }
