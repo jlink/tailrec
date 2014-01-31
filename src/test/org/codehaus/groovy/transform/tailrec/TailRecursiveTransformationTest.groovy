@@ -36,30 +36,6 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
 		assert target.aStaticFunction() == 43
 	}
 
-	void testThrowExceptionIfNotAllRecursiveCallsCanBeTransformed() {
-		shouldFail(CompilationFailedException) { evaluate("""
-            import groovy.transform.TailRecursive
-            class TargetClass {
-            	@TailRecursive
-            	int aNonTailRecursiveMethod() {
-            		return 1 + aNonTailRecursiveMethod() 
-            	}
-            }
-        """) }
-	}
-
-	void testThrowExceptionIfNotAllStaticRecursiveCallsCanBeTransformed() {
-		shouldFail(CompilationFailedException) { evaluate("""
-            import groovy.transform.TailRecursive
-            class TargetClass {
-            	@TailRecursive
-            	static int aNonTailRecursiveMethod() {
-            		return 1 + aNonTailRecursiveMethod() 
-            	}
-            }
-        """) }
-	}
-
 	void testSimpleRecursiveMethod() {
 		def target = evaluate("""
             import groovy.transform.TailRecursive

@@ -35,6 +35,7 @@ import java.lang.annotation.Target
  * <li>Mixing of tail calls and non-tail calls is not possible. The compiler will complain if some recursive calls cannot be handled.
  * <li>Checking if a recursive call is really tail-recursive is not very strict. You might run into cases where non-tail calls will be considered tail calls.
  * <li>All method calls with the same name and same number of arguments are considered to be recursive; no argument type matching happens.
+ * <li>Catching {@code Throwable} around a recursive might lead to problems
  * <li>Non trivial continuation passing style examples do not work.
  * <li>Probably many unrecognized edge cases.
  * </ul>
