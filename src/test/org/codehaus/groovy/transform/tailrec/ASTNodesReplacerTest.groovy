@@ -1,5 +1,7 @@
 package org.codehaus.groovy.transform.tailrec
 
+import org.codehaus.groovy.ast.VariableScope
+import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.CaseStatement
@@ -9,6 +11,8 @@ import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.SwitchStatement
 import org.codehaus.groovy.syntax.Token
 import org.junit.Test
+
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC
 
 /**
  * @author Johannes Link
@@ -196,6 +200,47 @@ class ASTNodesReplacerTest {
         replacer.replaceIn(caseStatement)
 
         assert caseStatement.expression == replacement
+    }
+
+    @Test
+    public void inClosureAttributeIsTrueInClosure() {
+        ClosureExpression closure = new AstBuilder().buildFromSpec {
+            closure {
+                parameters {
+                    parameter 'parm': Object.class
+                }
+                block {
+                    expression {
+                        constant 'old'
+                    }
+                }
+            }
+        }[0]
+
+        def replacer = new ASTNodesReplacer(
+                when: { node, inClosure -> inClosure && node instanceof ConstantExpression},
+                replaceWith: { aConstant('new') }
+        )
+        replacer.replaceIn(closure)
+
+        assert closure.code.statements[0].expression.text == 'new'
+    }
+
+    @Test
+    public void inClosureAttributeIsFalseOutsideClosure() {
+        BlockStatement block = new AstBuilder().buildFromSpec {
+            block {
+                expression {
+                    constant 'old'
+                }
+            }
+        }[0]
+
+        def replacer = new ASTNodesReplacer(
+                when: { node, inClosure -> inClosure && node instanceof ConstantExpression},
+                replaceWith: { assert false, 'Must not get here'}
+        )
+        replacer.replaceIn(block)
     }
 
     def aReturnStatement(value) {

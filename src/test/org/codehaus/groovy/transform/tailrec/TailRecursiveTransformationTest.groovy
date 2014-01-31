@@ -357,26 +357,23 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.factorial(2) == 2
     }
 
-    void testRecursiveCallsInEmbeddedClosuresAreRejected() {
-        shouldFail(CompilationFailedException) {
-            evaluate('''
-			import groovy.transform.TailRecursive
-			class TargetClass {
-				@TailRecursive
-                int fibonacci(int n, Closure c = { it }) {
+    void testRecursiveCallsInEmbeddedClosures() {
+        def target = evaluate('''
+            import groovy.transform.TailRecursive
+            class TargetClass {
+                @TailRecursive
+                int countDown(int n) {
                     if (n == 0)
-                        return c(1)
-                    if (n == 1)
-                        return c(1)
-                    def next = { r1 ->
-                        return fibonacci(n - 2) { r2 ->
-                            return c(r1 + r2)
-                        }
-                    }
-                    return fibonacci(n - 1, next)
+                        return -1
+                    def c = {return countDown(n - 1)}
+                    return c()
                 }
             }
-		''') }
+            new TargetClass()
+        ''')
+        assert target.countDown(0) == -1
+        assert target.countDown(1) == -1
+        assert target.countDown(100) == -1
     }
 
 }

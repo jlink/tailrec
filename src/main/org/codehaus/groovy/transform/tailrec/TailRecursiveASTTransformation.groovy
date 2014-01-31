@@ -39,7 +39,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             System.err.println(transformationDescription(method) + " skipped: No recursive calls detected.")
             return;
         }
-        ensureNoRecursiveCallsInEmbeddedClosures(method)
+//        ensureNoRecursiveCallsInEmbeddedClosures(method)
         //println(transformationDescription(method) + ": transform recursive calls to iteration.")
         transformToIteration(method, source)
         ensureAllRecursiveCallsHaveBeenTransformed(method)
@@ -121,8 +121,15 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         return [nameAndTypeMapping, positionMapping]
     }
 
-    private replaceAllRecursiveReturnsWithIteration(MethodNode method, Map positionMapping) {
-        def whenRecursiveReturn = { statement ->
+    private void replaceAllRecursiveReturnsWithIteration(MethodNode method, Map positionMapping) {
+        replaceRecursiveReturnsOutsideClosures(method, positionMapping)
+        replaceRecursiveReturnsInsideClosures(method, positionMapping)
+    }
+
+    private void replaceRecursiveReturnsOutsideClosures(MethodNode method, Map positionMapping) {
+        def whenRecursiveReturn = { statement, inClosure ->
+            if (inClosure)
+                return false
             if (!(statement instanceof ReturnStatement)) {
                 return false
             }
@@ -134,6 +141,26 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         }
         def replaceWithContinueBlock = { statement ->
             new ReturnStatementToIterationConverter().convert(statement, positionMapping)
+        }
+        def replacer = new ASTNodesReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
+        replacer.replaceIn(method.code)
+    }
+
+    private void replaceRecursiveReturnsInsideClosures(MethodNode method, Map positionMapping) {
+        def whenRecursiveReturn = { statement, inClosure ->
+            if (!inClosure)
+                return false
+            if (!(statement instanceof ReturnStatement)) {
+                return false
+            }
+            Expression inner = statement.expression
+            if (!(inner instanceof MethodCallExpression) && !(inner instanceof StaticMethodCallExpression)) {
+                return false
+            }
+            return isRecursiveIn(inner, method)
+        }
+        def replaceWithContinueBlock = { statement ->
+            new ReturnStatementToIterationConverter(recurStatement: AstHelper.recurByThrowStatement()).convert(statement, positionMapping)
         }
         def replacer = new ASTNodesReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
         replacer.replaceIn(method.code)

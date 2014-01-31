@@ -17,11 +17,17 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 	Map<ASTNode, ASTNode> replace = [:]
 	Closure when = { replace.containsKey it}
 	Closure replaceWith = { replace[it] }
-    List<ASTNode> parents = []
-	
-	void replaceIn(ASTNode root) {
+    int closureLevel = 0
+
+    void replaceIn(ASTNode root) {
 		root.visit(this)
 	}
+
+    public void visitClosureExpression(ClosureExpression expression) {
+        closureLevel++
+        super.visitClosureExpression(expression)
+        closureLevel--
+    }
 
     public void visitBlockStatement(BlockStatement block) {
 		block.statements.clone().eachWithIndex { Statement statement, index ->
@@ -72,13 +78,24 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 	}
 
 	private replaceIfNecessary(ASTNode nodeToCheck, Closure replacementCode) {
-		if (when(nodeToCheck)) {
+		if (conditionFulfilled(nodeToCheck)) {
 			def replacement = replaceWith(nodeToCheck)
 			replacementCode(replacement)
 		}
 	}
 
-	private void replaceInnerExpressionIfNecessary(statement) {
+    private boolean conditionFulfilled(ASTNode nodeToCheck) {
+        if (when.maximumNumberOfParameters < 2)
+            return when(nodeToCheck)
+        else
+            return when(nodeToCheck, isInClosure())
+    }
+
+    private boolean isInClosure() {
+        closureLevel > 0
+    }
+
+    private void replaceInnerExpressionIfNecessary(statement) {
 		replaceIfNecessary(statement.expression) {statement.expression = it}
 	}
 
