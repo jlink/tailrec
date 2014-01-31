@@ -31,9 +31,22 @@ class InWhileLoopWrapperTest {
 				block {
 					whileStatement {
 						booleanExpression { constant true }
-						block {   
-							returnStatement{  constant 2 } 
-						}
+                        block {
+                            tryCatch {
+                                block {
+                                    returnStatement{  constant 2 }
+                                }
+                                empty() //finally block
+                                catchStatement {
+                                    parameter 'ignore': GotoRecurHereException.class
+                                    //block {
+                                        continueStatement {
+                                            label InWhileLoopWrapper.LOOP_LABEL
+                                        }
+                                    //}
+                                }
+                            }
+                        }
 					}
 				}
 			}
