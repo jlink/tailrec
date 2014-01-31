@@ -1,11 +1,18 @@
 package org.codehaus.groovy.transform.tailrec
 
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.BinaryExpression
+import org.codehaus.groovy.ast.expr.ClassExpression
+import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.DeclarationExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.PropertyExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.ast.stmt.ContinueStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
+import org.codehaus.groovy.ast.stmt.Statement
+import org.codehaus.groovy.ast.stmt.ThrowStatement
 import org.codehaus.groovy.syntax.Token
 
 import java.lang.reflect.Modifier
@@ -37,5 +44,23 @@ class AstHelper {
 
     static VariableExpression createVariableReference(Map variableSpec) {
         new VariableExpression(variableSpec.name, variableSpec.type)
+    }
+
+    /**
+     * This statement should make the code jump to surrounding while loop's start label
+     * Does not work from within Closures
+     */
+    static Statement recurStatement() {
+        //continue _RECUR_HERE_
+        new ContinueStatement(InWhileLoopWrapper.LOOP_LABEL)
+    }
+
+    /**
+     * This statement will throw exception which will be caught and redirected to jump to surrounding while loop's start label
+     * Also works from within Closures but is a tiny bit slower
+     */
+    static Statement recurByThrowStatement() {
+        // throw InWhileLoopWrapper.LOOP_EXCEPTION
+        new ThrowStatement(new PropertyExpression(new ClassExpression(ClassHelper.make(InWhileLoopWrapper)), 'LOOP_EXCEPTION'))
     }
 }

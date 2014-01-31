@@ -3,10 +3,14 @@ package org.codehaus.groovy.transform.tailrec
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.*
 
+import javax.swing.plaf.nimbus.State
+
 /**
  * @author Johannes Link
  */
 class ReturnStatementToIterationConverter {
+
+    Statement recurStatement = AstHelper.recurStatement()
 
     Statement convert(ReturnStatement statement, Map positionMapping) {
         def recursiveCall = statement.expression
@@ -38,7 +42,7 @@ class ReturnStatementToIterationConverter {
         for (String temp : unusedTemps) {
             result.statements.remove(tempDeclarations[temp])
         }
-        result.addStatement(new ContinueStatement(InWhileLoopWrapper.LOOP_LABEL))
+        result.addStatement(recurStatement)
 
         return result
     }

@@ -44,6 +44,6 @@ class InWhileLoopWrapper {
 	}
 }
 
-class GotoRecurHereException extends RuntimeException {
+class GotoRecurHereException extends Throwable {
 
 }

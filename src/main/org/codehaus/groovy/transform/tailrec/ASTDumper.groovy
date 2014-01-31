@@ -1,6 +1,7 @@
 package org.codehaus.groovy.transform.tailrec
 
 import groovy.inspect.swingui.AstNodeToScriptVisitor
+import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.MethodNode
 
 /**
@@ -10,10 +11,14 @@ import org.codehaus.groovy.ast.MethodNode
  */
 class ASTDumper {
 
-    static void dump(MethodNode node) {
+    static void dump(ASTNode node) {
         def writer = new StringWriter()
         AstNodeToScriptVisitor adapter = new AstNodeToScriptVisitor(writer)
-        adapter.visitMethod(node)
+        node.visit(adapter)
         println writer
+    }
+
+    static void dump(MethodNode methodNode) {
+        dump(methodNode.code)
     }
 }
