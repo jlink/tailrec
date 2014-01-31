@@ -31,4 +31,23 @@ class TailRecursiveCompilationFailuresTest extends GroovyShellTestCase {
         """) }
 	}
 
+    void testFailIfRecursiveMethodCannotBeStaticallyCompiled() {
+        shouldFail(CompilationFailedException) { evaluate("""
+            import groovy.transform.TailRecursive
+            import groovy.transform.CompileStatic
+
+            @CompileStatic
+            class TargetClass {
+            	@TailRecursive
+            	static int staticCountDown(zahl) {
+            		if (zahl == 0)
+            			return zahl
+            		return staticCountDown(zahl - 1)
+            	}
+            }
+            new TargetClass()
+        """) }
+    }
+
+
 }

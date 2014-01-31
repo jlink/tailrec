@@ -47,11 +47,19 @@ class RecursivenessTester {
             return false
         def classNodePairs = [method.parameters*.type, call.arguments*.type].transpose()
         return classNodePairs.every { ClassNode paramType, ClassNode argType  ->
-            return argType.isDerivedFrom(paramType)
+            return areTypesCallCompatible(argType, paramType)
         }
 	}
 
-	public boolean isRecursive(MethodNode method, StaticMethodCallExpression call) {
+    /**
+     * Parameter type and calling argument type can both be derived from the other since typing information is
+     * optional in Groovy
+     */
+    private areTypesCallCompatible(ClassNode argType, ClassNode paramType) {
+        return argType.isDerivedFrom(paramType) || paramType.isDerivedFrom(argType)
+    }
+
+    public boolean isRecursive(MethodNode method, StaticMethodCallExpression call) {
 		if (!method.isStatic())
 			return false
 		if (method.declaringClass != call.ownerType)

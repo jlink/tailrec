@@ -27,24 +27,6 @@ class TailRecursiveCompiledStaticallyTest extends GroovyShellTestCase {
         assert target.staticCountDown(100000) == 0
     }
 
-    void testRecursiveMethodWhichCannotBeStaticallyCompiled() {
-        shouldFail(CompilationFailedException) { evaluate("""
-            import groovy.transform.TailRecursive
-            import groovy.transform.CompileStatic
-
-            @CompileStatic
-            class TargetClass {
-            	@TailRecursive
-            	static int staticCountDown(zahl) {
-            		if (zahl == 0)
-            			return zahl
-            		return staticCountDown(zahl - 1)
-            	}
-            }
-            new TargetClass()
-        """) }
-    }
-
     void testTypeCheckedRecursiveMethod() {
         def target = evaluate('''
             import groovy.transform.TailRecursive
@@ -66,6 +48,27 @@ class TailRecursiveCompiledStaticallyTest extends GroovyShellTestCase {
         assert target.fillString(1, "") == "+"
         assert target.fillString(5, "") == "+++++"
         assert target.fillString(10000, "") == "+" * 10000
+    }
+
+    void testStaticallyCompiledSumDown() {
+        def target = evaluate('''
+            import groovy.transform.TailRecursive
+            import groovy.transform.CompileStatic
+
+            @CompileStatic
+            class TargetClass {
+				@TailRecursive
+                long sumDown(long number, long sum = 0) {
+                    (number == 0) ? sum : sumDown(number - 1, sum + number)
+                }
+        	}
+            new TargetClass()
+		''')
+
+        assert target.sumDown(0) == 0
+        assert target.sumDown(5) == 5 + 4 + 3 + 2 + 1
+        assert target.sumDown(100) == 5050
+        assert target.sumDown(1000000) == 500000500000
     }
 
     void testStaticallyCompiledRecursiveFunctionWithTwoParameters() {

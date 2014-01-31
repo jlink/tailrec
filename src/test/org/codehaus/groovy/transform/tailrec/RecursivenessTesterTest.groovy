@@ -155,7 +155,7 @@ class RecursivenessTesterTest {
     }
 
     @Test
-    public void callWithArgASubtype() throws Exception {
+    public void callWithArgASubtypeOfParam() throws Exception {
         /*
          public void myMethod(Number a) {}
          */
@@ -183,7 +183,39 @@ class RecursivenessTesterTest {
             }
         }[0]
 
-        assert !tester.isRecursive(method: method, call: innerCall)
+        assert tester.isRecursive(method: method, call: innerCall)
+    }
+
+    @Test
+    public void callWithParamASubtypeOfArg() throws Exception {
+        /*
+         public void myMethod(int a) {}
+         */
+        def method = new AstBuilder().buildFromSpec {
+            method('myMethod', ACC_PUBLIC, Void.TYPE) {
+                parameters {
+                    parameter 'a': Number.class
+                }
+                exceptions {}
+                block {
+                }
+            }
+        }[0]
+
+        /*
+         this.myMethod(dynamicVariable);
+         */
+        def innerCall = new AstBuilder().buildFromSpec {
+            methodCall {
+                variable "this"
+                constant "myMethod"
+                argumentList {
+                    variable "dynamicVariable"
+                }
+            }
+        }[0]
+
+        assert tester.isRecursive(method: method, call: innerCall)
     }
 
     @Test
