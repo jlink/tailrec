@@ -357,23 +357,23 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
         assert target.factorial(2) == 2
     }
 
-    void testRecursiveCallsInEmbeddedClosures() {
+    void testRecursiveCallInEmbeddedClosures() {
         def target = evaluate('''
             import groovy.transform.TailRecursive
             class TargetClass {
                 @TailRecursive
-                int countDown(int n) {
+                int sum(int n, res = 0) {
                     if (n == 0)
-                        return -1
-                    def c = {countDown(n - 1)}
+                        return res
+                    def c = {sum(n - 1, res + n)}
                     return c()
                 }
             }
             new TargetClass()
         ''')
-        assert target.countDown(0) == -1
-        assert target.countDown(1) == -1
-        assert target.countDown(100) == -1
+        assert target.sum(0) == 0
+        assert target.sum(1) == 1
+        assert target.sum(100) == 5050
     }
 
 }
