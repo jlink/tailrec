@@ -39,19 +39,10 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
             System.err.println(transformationDescription(method) + " skipped: No recursive calls detected.")
             return;
         }
-//        ensureNoRecursiveCallsInEmbeddedClosures(method)
         //println(transformationDescription(method) + ": transform recursive calls to iteration.")
         transformToIteration(method, source)
         ensureAllRecursiveCallsHaveBeenTransformed(method)
     }
-
-    private void ensureNoRecursiveCallsInEmbeddedClosures(MethodNode method) {
-        def tester = new HasRecursiveCallsInEmbeddedClosures()
-        if (tester.test(method)) {
-            addError("Recursive calls in embedded closures are not supported", tester.guiltyExpression)
-        }
-    }
-
 
     private void transformToIteration(MethodNode method, SourceUnit source) {
         if (method.isVoidMethod()) {
@@ -172,6 +163,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
     private void addMissingDefaultReturnStatement(MethodNode method) {
         new ReturnAdder().visitMethod(method)
+        new ReturnAdderForClosures().addReturnsIfNeeded(method)
     }
 
     private void ensureAllRecursiveCallsHaveBeenTransformed(MethodNode method) {

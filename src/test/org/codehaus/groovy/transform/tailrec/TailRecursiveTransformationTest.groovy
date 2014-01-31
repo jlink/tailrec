@@ -365,7 +365,7 @@ class TailRecursiveTransformationTest extends GroovyShellTestCase {
                 int countDown(int n) {
                     if (n == 0)
                         return -1
-                    def c = {return countDown(n - 1)}
+                    def c = {countDown(n - 1)}
                     return c()
                 }
             }
