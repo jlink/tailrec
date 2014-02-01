@@ -3,8 +3,6 @@ package org.codehaus.groovy.transform.tailrec
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.*
 
-import javax.swing.plaf.nimbus.State
-
 /**
  * @author Johannes Link
  */
