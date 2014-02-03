@@ -1,22 +1,39 @@
+/*
+ * Copyright 2013-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.codehaus.groovy.transform.tailrec
 
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.CodeVisitorSupport
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.*
 
 /**
- * Generic tool for replacing parts of an AST
+ * Generic tool for replacing parts of an AST.
  *
- * It takes care to handle expressions as well since those are needed a few time for @TailRecursive
+ * It takes care to handle expressions as well since those are needed a few times for @TailRecursive
  *
  * @author Johannes Link
  */
+//@CompileStatic
 class ASTNodesReplacer extends CodeVisitorSupport {
 
 	Map<ASTNode, ASTNode> replace = [:]
-	Closure when = { replace.containsKey it}
-	Closure replaceWith = { replace[it] }
+	Closure when = { ASTNode node -> replace.containsKey node}
+	Closure replaceWith = { ASTNode node -> replace[node] }
     int closureLevel = 0
 
     void replaceIn(ASTNode root) {
@@ -30,8 +47,8 @@ class ASTNodesReplacer extends CodeVisitorSupport {
     }
 
     public void visitBlockStatement(BlockStatement block) {
-		block.statements.clone().eachWithIndex { Statement statement, index ->
-			replaceIfNecessary(statement) {block.statements[index] = it}
+		block.statements.clone().eachWithIndex { Statement statement, int index ->
+			replaceIfNecessary(statement) {Statement node -> block.statements[index] = node}
 		}
 		super.visitBlockStatement(block);
 	}
@@ -71,15 +88,15 @@ class ASTNodesReplacer extends CodeVisitorSupport {
 
 
     protected void visitListOfExpressions(List<? extends Expression> list) {
-		list.clone().eachWithIndex { Expression expression, index ->
-			replaceIfNecessary(expression) {list[index] = it}
+		list.clone().eachWithIndex { Expression expression, int index ->
+			replaceIfNecessary(expression) {Expression exp -> list[index] = exp}
 		}
 		super.visitListOfExpressions(list)
 	}
 
 	private replaceIfNecessary(ASTNode nodeToCheck, Closure replacementCode) {
 		if (conditionFulfilled(nodeToCheck)) {
-			def replacement = replaceWith(nodeToCheck)
+			ASTNode replacement = replaceWith(nodeToCheck)
 			replacementCode(replacement)
 		}
 	}
@@ -95,8 +112,8 @@ class ASTNodesReplacer extends CodeVisitorSupport {
         closureLevel > 0
     }
 
-    private void replaceInnerExpressionIfNecessary(statement) {
-		replaceIfNecessary(statement.expression) {statement.expression = it}
+    private void replaceInnerExpressionIfNecessary(ASTNode node) {
+		replaceIfNecessary(node.expression) {node.expression = it}
 	}
 
     //todo: test

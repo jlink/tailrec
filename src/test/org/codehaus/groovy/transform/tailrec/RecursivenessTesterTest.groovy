@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.codehaus.groovy.transform.tailrec
 
 import org.codehaus.groovy.ast.ClassHelper
@@ -20,109 +35,109 @@ import static org.objectweb.asm.Opcodes.ACC_STATIC
  */
 class RecursivenessTesterTest {
 
-    RecursivenessTester tester
+	RecursivenessTester tester
 
-    @Before
-    void init() {
-        tester = new RecursivenessTester()
-    }
+	@Before
+	void init() {
+		tester = new RecursivenessTester()
+	}
 
-    @Test
-    public void recursiveCallWithoutParameter() throws Exception {
-        /*
-         public void myMethod() {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', ACC_PUBLIC, Void.TYPE) {
-                parameters {}
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
+	@Test
+	public void recursiveCallWithoutParameter() throws Exception {
+		/*
+		 public void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
 
-        /*
-         this.myMethod();
-         */
-        def innerCall = new AstBuilder().buildFromSpec {
-            methodCall {
-                variable "this"
-                constant "myMethod"
-                argumentList {}
-            }
-        }[0]
+		/*
+		 this.myMethod();
+		 */
+		def innerCall = new AstBuilder().buildFromSpec {
+			methodCall {
+				variable "this"
+				constant "myMethod"
+				argumentList {}
+			}
+		}[0]
 
-        assert tester.isRecursive(method: method, call: innerCall)
-    }
+		assert tester.isRecursive(method: method, call: innerCall)
+	}
 
-    @Test
-    public void recursiveCallWithParameters() throws Exception {
-        /*
-         public void myMethod(String a, String b) {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', ACC_PUBLIC, Void.TYPE) {
-                parameters {
-                    parameter 'a': String.class
-                    parameter 'b': String.class
-                }
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
+	@Test
+	public void recursiveCallWithParameters() throws Exception {
+		/*
+		 public void myMethod(String a, String b) {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {
+					parameter 'a': String.class
+					parameter 'b': String.class
+				}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
 
-        /*
-         this.myMethod("a", "b");
-         */
-        def innerCall = new AstBuilder().buildFromSpec {
-            methodCall {
-                variable "this"
-                constant "myMethod"
-                argumentList {
-                    constant "a"
-                    constant "b"
-                }
-            }
-        }[0]
+		/*
+		 this.myMethod("a", "b");
+		 */
+		def innerCall = new AstBuilder().buildFromSpec {
+			methodCall {
+				variable "this"
+				constant "myMethod"
+				argumentList {
+					constant "a"
+					constant "b"
+				}
+			}
+		}[0]
 
-        assert tester.isRecursive(method: method, call: innerCall)
-    }
+		assert tester.isRecursive(method: method, call: innerCall)
+	}
 
-    @Test
-    public void callWithDifferentNumberOfParameters() throws Exception {
-        /*
-         public void myMethod(String a, String b) {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', ACC_PUBLIC, Void.TYPE) {
-                parameters {
-                    parameter 'a': String.class
-                    parameter 'b': String.class
-                }
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
+	@Test
+	public void callWithDifferentNumberOfParameters() throws Exception {
+		/*
+		 public void myMethod(String a, String b) {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {
+					parameter 'a': String.class
+					parameter 'b': String.class
+				}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
 
-        /*
-         this.myMethod("a", "b", "c");
-         */
-        def innerCall = new AstBuilder().buildFromSpec {
-            methodCall {
-                variable "this"
-                constant "myMethod"
-                argumentList {
-                    constant "a"
-                    constant "b"
-                    constant "c"
-                }
-            }
-        }[0]
+		/*
+		 this.myMethod("a", "b", "c");
+		 */
+		def innerCall = new AstBuilder().buildFromSpec {
+			methodCall {
+				variable "this"
+				constant "myMethod"
+				argumentList {
+					constant "a"
+					constant "b"
+					constant "c"
+				}
+			}
+		}[0]
 
-        assert !tester.isRecursive(method: method, call: innerCall)
-    }
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
 
     @Test
     public void callWithNonCompatibleArgType() throws Exception {
@@ -252,54 +267,54 @@ class RecursivenessTesterTest {
     }
 
     @Test
-    public void recursiveCallWithImplicitThis() throws Exception {
-        /*
-         public void myMethod() {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', ACC_PUBLIC, Void.TYPE) {
-                parameters {}
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
+	public void recursiveCallWithImplicitThis() throws Exception {
+		/*
+		 public void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
 
-        /*
-         myMethod();
-         */
-        def innerCall = new MethodCallExpression(null, "myMethod", new ArgumentListExpression());
+		/*
+		 myMethod();
+		 */
+		def innerCall = new MethodCallExpression(null, "myMethod", new ArgumentListExpression());
 
-        assert tester.isRecursive(method: method, call: innerCall)
-    }
+		assert tester.isRecursive(method: method, call: innerCall)
+	}
 
-    @Test
-    public void callWithDifferentName() {
-        /*
-         public void myMethod() {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', ACC_PUBLIC, Void.TYPE) {
-                parameters {}
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
+	@Test
+	public void callWithDifferentName() {
+		/*
+		 public void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
 
-        /*
-         yourMethod();
-         */
-        def innerCall = new AstBuilder().buildFromSpec {
-            methodCall {
-                variable "this"
-                constant "yourMethod"
-                argumentList {}
-            }
-        }[0]
+		/*
+		 yourMethod();
+		 */
+		def innerCall = new AstBuilder().buildFromSpec {
+			methodCall {
+				variable "this"
+				constant "yourMethod"
+				argumentList {}
+			}
+		}[0]
 
-        assert !tester.isRecursive(method: method, call: innerCall)
-    }
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
 
     @Test
     public void callWithGStringMethodNameIsNotConsideredRecursive() {
@@ -337,182 +352,182 @@ class RecursivenessTesterTest {
         assert !tester.isRecursive(method: method, call: innerCall)
     }
 
-    @Test
-    public void callOnDifferentTarget() {
-        /*
-         public void myMethod() {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', ACC_PUBLIC, Void.TYPE) {
-                parameters {}
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
+	@Test
+	public void callOnDifferentTarget() {
+		/*
+		 public void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
 
-        /*
-         other.myMethod();
-         */
-        def innerCall = new AstBuilder().buildFromSpec {
-            methodCall {
-                variable "other"
-                constant "myMethod"
-                argumentList {}
-            }
-        }[0]
+		/*
+		 other.myMethod();
+		 */
+		def innerCall = new AstBuilder().buildFromSpec {
+			methodCall {
+				variable "other"
+				constant "myMethod"
+				argumentList {}
+			}
+		}[0]
 
-        assert !tester.isRecursive(method: method, call: innerCall)
-    }
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
 
-    @Test
-    public void staticRecursiveCallWithParameter() {
-        /*
-         public static void myMethod(String a) {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
-                parameters {
-                    parameter 'a': String.class
-                }
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
-        method.declaringClass = ClassHelper.make("MyClass")
+	@Test
+	public void staticRecursiveCallWithParameter() {
+		/*
+		 public static void myMethod(String a) {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters { 
+					parameter 'a': String.class 
+				}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.declaringClass = ClassHelper.make("MyClass")
 
-        /*
-         myMethod("a");
-         */
-        def expressions = [new ConstantExpression("a")]
-        def args = new ArgumentListExpression(expressions)
-        def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", args)
+		/*
+		 myMethod("a");
+		 */
+		def expressions = [new ConstantExpression("a")]
+		def args = new ArgumentListExpression(expressions)
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", args)
 
-        assert tester.isRecursive(method: method, call: innerCall)
-    }
+		assert tester.isRecursive(method: method, call: innerCall)
+	}
 
-    @Test
-    public void staticRecursiveCallWithFunctionCallAsArgument() {
-        /*
-         public static void myMethod(String a) {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
-                parameters {
-                    parameter 'a': String.class
-                }
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
-        method.declaringClass = ClassHelper.make("MyClass")
+	@Test
+	public void staticRecursiveCallWithFunctionCallAsArgument() {
+		/*
+		 public static void myMethod(String a) {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters {
+					parameter 'a': String.class
+				}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.declaringClass = ClassHelper.make("MyClass")
 
-        /*
-         myMethod(otherMethod());
-         */
-        def expressions = [new StaticMethodCallExpression(ClassHelper.make("MyClass"), "otherMethod", new ArgumentListExpression([]))]
-        def args = new ArgumentListExpression(expressions)
-        def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", args)
+		/*
+		 myMethod(otherMethod());
+		 */
+		def expressions = [new StaticMethodCallExpression(ClassHelper.make("MyClass"), "otherMethod", new ArgumentListExpression([]))]
+		def args = new ArgumentListExpression(expressions)
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", args)
 
-        assert tester.isRecursive(method: method, call: innerCall)
-    }
+		assert tester.isRecursive(method: method, call: innerCall)
+	}
 
-    @Test
-    public void staticCallWithDifferentNumberOfParameters() {
-        /*
-         public static void myMethod(String a) {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
-                parameters {
-                    parameter 'a': String.class
-                }
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
-        method.declaringClass = ClassHelper.make("MyClass")
+	@Test
+	public void staticCallWithDifferentNumberOfParameters() {
+		/*
+		 public static void myMethod(String a) {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters {
+					parameter 'a': String.class
+				}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.declaringClass = ClassHelper.make("MyClass")
+		
+		/*
+		 myMethod("a", "b");
+		 */
+		def expressions = [new ConstantExpression("a"), new ConstantExpression("b")]
+		def args = new ArgumentListExpression(expressions)
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", args)
 
-        /*
-         myMethod("a", "b");
-         */
-        def expressions = [new ConstantExpression("a"), new ConstantExpression("b")]
-        def args = new ArgumentListExpression(expressions)
-        def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", args)
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
 
-        assert !tester.isRecursive(method: method, call: innerCall)
-    }
+	@Test
+	public void staticCallOnNonStaticMethod() {
+		/*
+		 public void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', ACC_PUBLIC, Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.declaringClass = ClassHelper.make("MyClass")
+		
+		/*
+		 myMethod();
+		 */
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", new ArgumentListExpression())
 
-    @Test
-    public void staticCallOnNonStaticMethod() {
-        /*
-         public void myMethod() {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', ACC_PUBLIC, Void.TYPE) {
-                parameters {}
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
-        method.declaringClass = ClassHelper.make("MyClass")
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
 
-        /*
-         myMethod();
-         */
-        def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "myMethod", new ArgumentListExpression())
+	@Test
+	public void staticCallWithDifferentName() {
+		/*
+		 public static void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.declaringClass = ClassHelper.make("MyClass")
+		
+		/*
+		 yourMethod();
+		 */
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "yourMethod", new ArgumentListExpression())
 
-        assert !tester.isRecursive(method: method, call: innerCall)
-    }
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
 
-    @Test
-    public void staticCallWithDifferentName() {
-        /*
-         public static void myMethod() {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
-                parameters {}
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
-        method.declaringClass = ClassHelper.make("MyClass")
+	@Test
+	public void staticCallOnDifferentClass() {
+		/*
+		 public static void myMethod() {}
+		 */
+		def method = new AstBuilder().buildFromSpec {
+			method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
+				parameters {}
+				exceptions {}
+				block {
+				}
+			}
+		}[0]
+		method.declaringClass = ClassHelper.make("MyClass")
+		
+		/*
+		 OtherClass.myMethod();
+		 */
+		def innerCall = new StaticMethodCallExpression(ClassHelper.make("OtherClass"), "myMethod", new ArgumentListExpression())
 
-        /*
-         yourMethod();
-         */
-        def innerCall = new StaticMethodCallExpression(ClassHelper.make("MyClass"), "yourMethod", new ArgumentListExpression())
-
-        assert !tester.isRecursive(method: method, call: innerCall)
-    }
-
-    @Test
-    public void staticCallOnDifferentClass() {
-        /*
-         public static void myMethod() {}
-         */
-        def method = new AstBuilder().buildFromSpec {
-            method('myMethod', (ACC_PUBLIC | ACC_STATIC), Void.TYPE) {
-                parameters {}
-                exceptions {}
-                block {
-                }
-            }
-        }[0]
-        method.declaringClass = ClassHelper.make("MyClass")
-
-        /*
-         OtherClass.myMethod();
-         */
-        def innerCall = new StaticMethodCallExpression(ClassHelper.make("OtherClass"), "myMethod", new ArgumentListExpression())
-
-        assert !tester.isRecursive(method: method, call: innerCall)
-    }
+		assert !tester.isRecursive(method: method, call: innerCall)
+	}
 
 }

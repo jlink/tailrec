@@ -1,3 +1,18 @@
+/*
+ * Copyright 2013-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.codehaus.groovy.transform.tailrec
 
 import groovy.transform.TailRecursive
@@ -18,9 +33,11 @@ import org.codehaus.groovy.transform.GroovyASTTransformation
 /**
  * Handles generation of code for the @TailRecursive annotation.
  *
+ * It's doing its work in the earliest possible compile phase
+ *
  * @author Johannes Link
  */
-@GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS) //the earliest possible phase
+@GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
 class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
     private static final Class MY_CLASS = TailRecursive.class;
@@ -36,10 +53,10 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
 
         MethodNode method = nodes[1]
         if (!hasRecursiveMethodCalls(method)) {
+            //Todo: Emit a compiler warning. How to do that?
             System.err.println(transformationDescription(method) + " skipped: No recursive calls detected.")
             return;
         }
-        //println(transformationDescription(method) + ": transform recursive calls to iteration.")
         transformToIteration(method, source)
         ensureAllRecursiveCallsHaveBeenTransformed(method)
     }
@@ -98,7 +115,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         new VariableAccessReplacer(nameAndTypeMapping: nameAndTypeMapping).replaceIn(method.code)
     }
 
-    private  parameterMappingFor(MethodNode method) {
+    private parameterMappingFor(MethodNode method) {
         def nameAndTypeMapping = [:]
         def positionMapping = [:]
         BlockStatement code = method.code
