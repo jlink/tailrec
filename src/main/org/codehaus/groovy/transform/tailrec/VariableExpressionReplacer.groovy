@@ -18,7 +18,6 @@ package org.codehaus.groovy.transform.tailrec
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.CodeVisitorSupport
-import org.codehaus.groovy.ast.expr.ClosureExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.ExpressionTransformer
 import org.codehaus.groovy.ast.expr.VariableExpression
@@ -72,6 +71,7 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
 
 
     public void visitIfElse(IfStatement ifElse) {
+//        replaceIfNecessary(ifElse.booleanExpression) { BooleanExpression ex -> ifElse.booleanExpression = ex }
         super.visitIfElse(ifElse);
     }
 
@@ -85,6 +85,48 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
 
     public void visitDoWhileLoop(DoWhileStatement loop) {
         super.visitDoWhileLoop(loop);
+    }
+
+    public void visitSwitch(SwitchStatement statement) {
+//        replaceInnerExpressionIfNecessary(statement)
+        super.visitSwitch(statement)
+    }
+
+    public void visitCaseStatement(CaseStatement statement) {
+//        replaceInnerExpressionIfNecessary(statement)
+        super.visitCaseStatement(statement)
+    }
+
+    //todo: test
+    public void visitExpressionStatement(ExpressionStatement statement) {
+//        replaceIfNecessary(statement.expression) { Expression ex -> statement.expression = ex }
+        super.visitExpressionStatement(statement);
+    }
+
+    //todo: test
+    public void visitThrowStatement(ThrowStatement statement) {
+//        replaceInnerExpressionIfNecessary(statement)
+        super.visitThrowStatement(statement)
+    }
+
+    //todo: test
+    public void visitAssertStatement(AssertStatement statement) {
+//        replaceIfNecessary(statement.booleanExpression) { BooleanExpression ex -> statement.booleanExpression = ex }
+//        replaceIfNecessary(statement.messageExpression) { Expression ex -> statement.messageExpression = ex }
+        super.visitAssertStatement(statement)
+    }
+
+    //todo: test
+    public void visitSynchronizedStatement(SynchronizedStatement statement) {
+//        replaceInnerExpressionIfNecessary(statement)
+        super.visitSynchronizedStatement(statement)
+    }
+
+    //todo: test
+    public void visitCatchStatement(CatchStatement statement) {
+        //CatchStatement.variable is readonly todo: Handle in VariableAccessReplacer or w/ reflection
+        //replaceIfNecessary(statement.variable) { Parameter p -> statement.variable = p }
+        super.visitCatchStatement(statement)
     }
 
 }
