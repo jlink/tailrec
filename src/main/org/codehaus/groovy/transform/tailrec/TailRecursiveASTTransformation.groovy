@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.classgen.ReturnAdder
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.CompilePhase
@@ -99,7 +100,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         def replaceWithIfStatement = { expression ->
             ternaryToIfStatement.convert(expression)
         }
-        def replacer = new ASTNodesReplacer(when: whenReturnWithTernary, replaceWith: replaceWithIfStatement)
+        def replacer = new StatementReplacer(when: whenReturnWithTernary, replaceWith: replaceWithIfStatement)
         replacer.replaceIn(method.code)
 
     }
@@ -135,7 +136,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
     }
 
     private void replaceRecursiveReturnsOutsideClosures(MethodNode method, Map positionMapping) {
-        def whenRecursiveReturn = { statement, inClosure ->
+        def whenRecursiveReturn = { Statement statement, boolean inClosure ->
             if (inClosure)
                 return false
             if (!(statement instanceof ReturnStatement)) {
@@ -150,12 +151,12 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         def replaceWithContinueBlock = { statement ->
             new ReturnStatementToIterationConverter().convert(statement, positionMapping)
         }
-        def replacer = new ASTNodesReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
+        def replacer = new StatementReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
         replacer.replaceIn(method.code)
     }
 
     private void replaceRecursiveReturnsInsideClosures(MethodNode method, Map positionMapping) {
-        def whenRecursiveReturn = { statement, inClosure ->
+        def whenRecursiveReturn = { Statement statement, boolean inClosure ->
             if (!inClosure)
                 return false
             if (!(statement instanceof ReturnStatement)) {
@@ -170,7 +171,7 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         def replaceWithContinueBlock = { statement ->
             new ReturnStatementToIterationConverter(recurStatement: AstHelper.recurByThrowStatement()).convert(statement, positionMapping)
         }
-        def replacer = new ASTNodesReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
+        def replacer = new StatementReplacer(when: whenRecursiveReturn, replaceWith: replaceWithContinueBlock)
         replacer.replaceIn(method.code)
     }
 

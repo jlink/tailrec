@@ -1,9 +1,7 @@
 TODO:
 - Tests for VariableAccessReplacer, or even better: find a general solution for replacing nested expressions
-- Check for other readonly expression fields in expressions (like in UnaryMinusExpression) and treat them specially
 - Groovy-Documentation
 - Exclude parameters that are just "reentered" into recursive call from copying to local var
 - Maybe there is a way to make CPS work (with currying all local vars into closures?)
 - The whole void method branch, which makes sense for event loops and alike.
-- Test all expression replacements in ASTNodesReplacer
 - Add annotation (@NotTailRecursive?) for method calls that are not direct tail-calls
