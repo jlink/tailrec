@@ -51,22 +51,37 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
     }
 
     private void replaceExpressionPropertyWhenNecessary(ASTNode node, String propName = "expression") {
-        //Simulate Groovy's property access
-        String getterName = 'get' + propName[0].toUpperCase() + propName[1..-1]
-        String setterName = 'set' + propName[0].toUpperCase() + propName[1..-1]
-        Method getExpressionMethod = node.class.getMethod(getterName, new Class[0])
-        Method setExpressionMethod = node.class.getMethod(setterName, [Expression].toArray(new Class[1]))
-        Expression expr = getExpressionMethod.invoke(node, new Object[0]) as Expression
+        Expression expr = getExpression(node, propName)
 
         if (expr instanceof VariableExpression) {
             if (when(expr)) {
                 VariableExpression newExpr = replaceWith(expr)
-                setExpressionMethod.invoke(node, [newExpr].toArray())
+                replaceExpression(node, propName, expr, newExpr)
             }
         } else {
             Expression newExpr = expr.transformExpression(transformer)
-            setExpressionMethod.invoke(node, [newExpr].toArray())
+            replaceExpression(node, propName, expr, newExpr)
         }
+    }
+
+    private void replaceExpression(ASTNode node, String propName, Expression oldExpr, Expression newExpr) {
+        //Use reflection to enable CompileStatic
+        String setterName = 'set' + capitalizeFirst(propName)
+        Method setExpressionMethod = node.class.getMethod(setterName, [Expression].toArray(new Class[1]))
+        newExpr.setSourcePosition(oldExpr);
+        newExpr.copyNodeMetaData(oldExpr);
+        setExpressionMethod.invoke(node, [newExpr].toArray())
+    }
+
+    private Expression getExpression(ASTNode node, String propName) {
+        //Use reflection to enable CompileStatic
+        String getterName = 'get' + capitalizeFirst(propName)
+        Method getExpressionMethod = node.class.getMethod(getterName, new Class[0])
+        getExpressionMethod.invoke(node, new Object[0]) as Expression
+    }
+
+    private String capitalizeFirst(String propName) {
+        propName[0].toUpperCase() + propName[1..-1]
     }
 
 
@@ -138,12 +153,14 @@ class VariableExpressionTransformer implements ExpressionTransformer {
     Closure<VariableExpression> replaceWith
 
     @Override
-    Expression transform(Expression expression) {
-        if ((expression instanceof VariableExpression) && when(expression)) {
-            VariableExpression newExpression = replaceWith(expression)
-            return newExpression
+    Expression transform(Expression expr) {
+        if ((expr instanceof VariableExpression) && when(expr)) {
+            VariableExpression newExpr = replaceWith(expr)
+            newExpr.setSourcePosition(expr);
+            newExpr.copyNodeMetaData(expr);
+            return newExpr
         }
-        return expression.transformExpression(this)
+        return expr.transformExpression(this)
     }
 }
 

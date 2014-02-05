@@ -50,6 +50,7 @@ class VariableExpressionReplacerTest {
     @Test
     public void replaceInReturnStatement() {
         def toReplace = aVariable("old")
+        toReplace.lineNumber = 42
         def replacement = aVariable("new")
         def returnStatement = new ReturnStatement(toReplace)
 
@@ -57,11 +58,13 @@ class VariableExpressionReplacerTest {
         replacer.replaceIn(returnStatement)
 
         assert returnStatement.expression == replacement
+        assert replacement.lineNumber == toReplace.lineNumber
     }
 
     @Test
     public void replaceEmbeddedInBooleanExpression() {
         def toReplace = aVariable("old")
+        toReplace.lineNumber = 42
         def replacement = aVariable("new")
         def returnStatement = new ReturnStatement(new BooleanExpression(toReplace))
 
@@ -69,6 +72,7 @@ class VariableExpressionReplacerTest {
         replacer.replaceIn(returnStatement)
 
         assert returnStatement.expression.expression == replacement
+        assert replacement.lineNumber == toReplace.lineNumber
     }
 
 
