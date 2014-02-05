@@ -59,6 +59,21 @@ class StatementReplacerTest {
     }
 
     @Test
+    public void replacingElementCopiesSourcePosition() {
+        def toReplace = aReturnStatement("old")
+        toReplace.lineNumber = 42
+        def replacement = aReturnStatement("new")
+        def block = new BlockStatement()
+        block.addStatement(toReplace)
+
+        replacements[toReplace] = replacement
+        replacer.replaceIn(block)
+
+        assert block.statements[0] == replacement
+        assert replacement.lineNumber == toReplace.lineNumber
+    }
+
+    @Test
     public void replaceByCondition() {
         def toReplace = aReturnStatement("old")
         def replacement = aReturnStatement("new")
@@ -204,10 +219,6 @@ class StatementReplacerTest {
 
     def aConstant(value) {
         new ConstantExpression(value)
-    }
-
-    def aVariable(value) {
-        new VariableExpression(value)
     }
 
     def aBooleanExpression(value) {

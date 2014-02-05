@@ -81,11 +81,8 @@ class StatementReplacer extends CodeVisitorSupport {
     private void replaceIfNecessary(Statement nodeToCheck, Closure replacementCode) {
         if (conditionFulfilled(nodeToCheck)) {
             ASTNode replacement = replaceWith(nodeToCheck)
-
-            //Copied from transformExpression() implementations. Can only guess that it's needed.
             replacement.setSourcePosition(nodeToCheck);
             replacement.copyNodeMetaData(nodeToCheck);
-
             replacementCode(replacement)
         }
     }
