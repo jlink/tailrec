@@ -15,17 +15,11 @@
  */
 package org.codehaus.groovy.transform.tailrec
 
-import org.codehaus.groovy.ast.ASTNode
-import org.codehaus.groovy.ast.ClassHelper
-import org.codehaus.groovy.ast.Parameter
-import org.codehaus.groovy.ast.builder.AstBuilder
-import org.codehaus.groovy.ast.expr.BinaryExpression
-import org.codehaus.groovy.ast.expr.BooleanExpression
-import org.codehaus.groovy.ast.expr.ClosureExpression
-import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.VariableExpression
-import org.codehaus.groovy.ast.stmt.*
+import org.codehaus.groovy.ast.expr.*
+import org.codehaus.groovy.ast.stmt.EmptyStatement
+import org.codehaus.groovy.ast.stmt.IfStatement
+import org.codehaus.groovy.ast.stmt.ReturnStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.syntax.Token
 import org.junit.Before
 import org.junit.Test
@@ -49,48 +43,53 @@ class VariableExpressionReplacerTest {
 
     @Test
     public void replaceInReturnStatement() {
-        def toReplace = aVariable("old")
-        toReplace.lineNumber = 42
-        def replacement = aVariable("new")
-        def returnStatement = new ReturnStatement(toReplace)
+        def createStatement = { new ReturnStatement(it) }
+        def accessExpression = { it.expression }
 
-        replacements[toReplace] = replacement
-        replacer.replaceIn(returnStatement)
-
-        assert returnStatement.expression == replacement
-        assert replacement.lineNumber == toReplace.lineNumber
+        assertReplace(createStatement, accessExpression)
     }
 
     @Test
     public void replaceEmbeddedInBooleanExpression() {
-        def toReplace = aVariable("old")
-        toReplace.lineNumber = 42
-        def replacement = aVariable("new")
-        def returnStatement = new ReturnStatement(new BooleanExpression(toReplace))
+        def createStatement = { new ReturnStatement(new BooleanExpression(it)) }
+        def accessExpression = { it.expression.expression }
 
-        replacements[toReplace] = replacement
-        replacer.replaceIn(returnStatement)
-
-        assert returnStatement.expression.expression == replacement
-        assert replacement.lineNumber == toReplace.lineNumber
+        assertReplace(createStatement, accessExpression)
     }
 
 
     @Test
     public void replaceDeeplyEmbeddedInReturnStatement() {
+        def createStatement = { new ReturnStatement(new BooleanExpression(new BinaryExpression(it, EQUALS, aConstant('a')))) }
+        def accessExpression = { it.expression.expression.leftExpression }
+
+        assertReplace(createStatement, accessExpression)
+    }
+
+    @Test
+    public void replaceBooleanExpressionInIfElseStatement() {
+        def createStatement = { new IfStatement(new BooleanExpression(it), anEmptyStatement(), anEmptyStatement()) }
+        def accessExpression = { it.booleanExpression.expression }
+
+        assertReplace(createStatement, accessExpression)
+    }
+
+    private void assertReplace(Closure<Statement> createStatement, Closure<Expression> accessExpression) {
         def toReplace = aVariable("old")
+        toReplace.lineNumber = 42
         def replacement = aVariable("new")
-        def returnStatement = new ReturnStatement(new BooleanExpression(new BinaryExpression(toReplace, EQUALS, aConstant('a'))))
+        def statement = createStatement(toReplace)
 
         replacements[toReplace] = replacement
-        replacer.replaceIn(returnStatement)
+        replacer.replaceIn(statement)
 
-        assert returnStatement.expression.expression.leftExpression == replacement
+        assert accessExpression(statement) == replacement
+        assert accessExpression(statement).lineNumber == replacement.lineNumber
     }
 
 
-    def aReturnStatement(value) {
-        new ReturnStatement(aConstant(value))
+    def anEmptyStatement() {
+        new EmptyStatement()
     }
 
     def aConstant(value) {
@@ -99,9 +98,5 @@ class VariableExpressionReplacerTest {
 
     def aVariable(value) {
         new VariableExpression(value)
-    }
-
-    def aBooleanExpression(value) {
-        new BooleanExpression(new ConstantExpression(value))
     }
 }

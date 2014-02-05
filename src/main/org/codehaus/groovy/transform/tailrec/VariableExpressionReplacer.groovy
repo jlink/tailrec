@@ -18,6 +18,7 @@ package org.codehaus.groovy.transform.tailrec
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.CodeVisitorSupport
+import org.codehaus.groovy.ast.expr.BooleanExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.ExpressionTransformer
 import org.codehaus.groovy.ast.expr.VariableExpression
@@ -50,24 +51,29 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
         super.visitReturnStatement(statement);
     }
 
-    private void replaceExpressionPropertyWhenNecessary(ASTNode node, String propName = "expression") {
+    public void visitIfElse(IfStatement ifElse) {
+        replaceExpressionPropertyWhenNecessary(ifElse, 'booleanExpression', BooleanExpression)
+        super.visitIfElse(ifElse);
+    }
+
+    private void replaceExpressionPropertyWhenNecessary(ASTNode node, String propName = "expression", Class propClass = Expression) {
         Expression expr = getExpression(node, propName)
 
         if (expr instanceof VariableExpression) {
             if (when(expr)) {
                 VariableExpression newExpr = replaceWith(expr)
-                replaceExpression(node, propName, expr, newExpr)
+                replaceExpression(node, propName, propClass, expr, newExpr)
             }
         } else {
             Expression newExpr = expr.transformExpression(transformer)
-            replaceExpression(node, propName, expr, newExpr)
+            replaceExpression(node, propName, propClass, expr, newExpr)
         }
     }
 
-    private void replaceExpression(ASTNode node, String propName, Expression oldExpr, Expression newExpr) {
+    private void replaceExpression(ASTNode node, String propName, Class propClass, Expression oldExpr, Expression newExpr) {
         //Use reflection to enable CompileStatic
         String setterName = 'set' + capitalizeFirst(propName)
-        Method setExpressionMethod = node.class.getMethod(setterName, [Expression].toArray(new Class[1]))
+        Method setExpressionMethod = node.class.getMethod(setterName, [propClass].toArray(new Class[1]))
         newExpr.setSourcePosition(oldExpr);
         newExpr.copyNodeMetaData(oldExpr);
         setExpressionMethod.invoke(node, [newExpr].toArray())
@@ -84,11 +90,6 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
         propName[0].toUpperCase() + propName[1..-1]
     }
 
-
-    public void visitIfElse(IfStatement ifElse) {
-//        replaceIfNecessary(ifElse.booleanExpression) { BooleanExpression ex -> ifElse.booleanExpression = ex }
-        super.visitIfElse(ifElse);
-    }
 
     public void visitForLoop(ForStatement forLoop) {
         super.visitForLoop(forLoop);
