@@ -61,6 +61,55 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
         super.visitForLoop(forLoop);
     }
 
+    //todo: test
+    public void visitWhileLoop(WhileStatement loop) {
+        replaceExpressionPropertyWhenNecessary(loop, 'booleanExpression', BooleanExpression)
+        super.visitWhileLoop(loop);
+    }
+
+    //todo: test
+    public void visitDoWhileLoop(DoWhileStatement loop) {
+        replaceExpressionPropertyWhenNecessary(loop, 'booleanExpression', BooleanExpression)
+        super.visitDoWhileLoop(loop);
+    }
+
+    //todo: test
+    public void visitSwitch(SwitchStatement statement) {
+        replaceExpressionPropertyWhenNecessary(statement)
+        super.visitSwitch(statement)
+    }
+
+    //todo: test
+    public void visitCaseStatement(CaseStatement statement) {
+        replaceExpressionPropertyWhenNecessary(statement)
+        super.visitCaseStatement(statement)
+    }
+
+    //todo: test
+    public void visitExpressionStatement(ExpressionStatement statement) {
+        replaceExpressionPropertyWhenNecessary(statement)
+        super.visitExpressionStatement(statement);
+    }
+
+    //todo: test
+    public void visitThrowStatement(ThrowStatement statement) {
+        replaceExpressionPropertyWhenNecessary(statement)
+        super.visitThrowStatement(statement)
+    }
+
+    //todo: test
+    public void visitAssertStatement(AssertStatement statement) {
+        replaceExpressionPropertyWhenNecessary(statement, 'booleanExpression', BooleanExpression)
+        replaceExpressionPropertyWhenNecessary(statement, 'messageExpression', BooleanExpression)
+        super.visitAssertStatement(statement)
+    }
+
+    //todo: test
+    public void visitSynchronizedStatement(SynchronizedStatement statement) {
+        replaceExpressionPropertyWhenNecessary(statement)
+        super.visitSynchronizedStatement(statement)
+    }
+
     private void replaceExpressionPropertyWhenNecessary(ASTNode node, String propName = "expression", Class propClass = Expression) {
         Expression expr = getExpression(node, propName)
 
@@ -95,56 +144,6 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
         propName[0].toUpperCase() + propName[1..-1]
     }
 
-
-    public void visitWhileLoop(WhileStatement loop) {
-        super.visitWhileLoop(loop);
-    }
-
-    public void visitDoWhileLoop(DoWhileStatement loop) {
-        super.visitDoWhileLoop(loop);
-    }
-
-    public void visitSwitch(SwitchStatement statement) {
-//        replaceInnerExpressionIfNecessary(statement)
-        super.visitSwitch(statement)
-    }
-
-    public void visitCaseStatement(CaseStatement statement) {
-//        replaceInnerExpressionIfNecessary(statement)
-        super.visitCaseStatement(statement)
-    }
-
-    //todo: test
-    public void visitExpressionStatement(ExpressionStatement statement) {
-//        replaceIfNecessary(statement.expression) { Expression ex -> statement.expression = ex }
-        super.visitExpressionStatement(statement);
-    }
-
-    //todo: test
-    public void visitThrowStatement(ThrowStatement statement) {
-//        replaceInnerExpressionIfNecessary(statement)
-        super.visitThrowStatement(statement)
-    }
-
-    //todo: test
-    public void visitAssertStatement(AssertStatement statement) {
-//        replaceIfNecessary(statement.booleanExpression) { BooleanExpression ex -> statement.booleanExpression = ex }
-//        replaceIfNecessary(statement.messageExpression) { Expression ex -> statement.messageExpression = ex }
-        super.visitAssertStatement(statement)
-    }
-
-    //todo: test
-    public void visitSynchronizedStatement(SynchronizedStatement statement) {
-//        replaceInnerExpressionIfNecessary(statement)
-        super.visitSynchronizedStatement(statement)
-    }
-
-    //todo: test
-    public void visitCatchStatement(CatchStatement statement) {
-        //CatchStatement.variable is readonly todo: Handle in VariableAccessReplacer or w/ reflection
-        //replaceIfNecessary(statement.variable) { Parameter p -> statement.variable = p }
-        super.visitCatchStatement(statement)
-    }
 
 }
 
