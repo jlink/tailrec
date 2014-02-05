@@ -56,6 +56,11 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
         super.visitIfElse(ifElse);
     }
 
+    public void visitForLoop(ForStatement forLoop) {
+        replaceExpressionPropertyWhenNecessary(forLoop, 'collectionExpression')
+        super.visitForLoop(forLoop);
+    }
+
     private void replaceExpressionPropertyWhenNecessary(ASTNode node, String propName = "expression", Class propClass = Expression) {
         Expression expr = getExpression(node, propName)
 
@@ -90,10 +95,6 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
         propName[0].toUpperCase() + propName[1..-1]
     }
 
-
-    public void visitForLoop(ForStatement forLoop) {
-        super.visitForLoop(forLoop);
-    }
 
     public void visitWhileLoop(WhileStatement loop) {
         super.visitWhileLoop(loop);

@@ -15,8 +15,11 @@
  */
 package org.codehaus.groovy.transform.tailrec
 
+import org.codehaus.groovy.ast.ClassHelper
+import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.EmptyStatement
+import org.codehaus.groovy.ast.stmt.ForStatement
 import org.codehaus.groovy.ast.stmt.IfStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.Statement
@@ -74,6 +77,14 @@ class VariableExpressionReplacerTest {
         assertReplace(createStatement, accessExpression)
     }
 
+    @Test
+    public void replaceCollectionExpressionInForLoop() {
+        def createStatement = { new ForStatement(anyParameter(), it, anEmptyStatement()) }
+        def accessExpression = { it.collectionExpression }
+
+        assertReplace(createStatement, accessExpression)
+    }
+
     private void assertReplace(Closure<Statement> createStatement, Closure<Expression> accessExpression) {
         def toReplace = aVariable("old")
         toReplace.lineNumber = 42
@@ -99,4 +110,9 @@ class VariableExpressionReplacerTest {
     def aVariable(value) {
         new VariableExpression(value)
     }
+
+    def anyParameter() {
+        new Parameter(ClassHelper.int_TYPE, 'a')
+    }
+
 }
