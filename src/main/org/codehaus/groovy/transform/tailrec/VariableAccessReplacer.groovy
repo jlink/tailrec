@@ -27,6 +27,14 @@ class VariableAccessReplacer {
     Closure replaceBy = { nameAndType -> AstHelper.createVariableReference(nameAndType) }
 
     void replaceIn(ASTNode root) {
+//        Closure<Boolean> whenParam = {VariableExpression expr ->
+//            return nameAndTypeMapping.containsKey(expr.name)
+//        }
+//        Closure<VariableExpression> replaceWithLocalVariable = {VariableExpression expr ->
+//            Map nameAndType = nameAndTypeMapping[expr.name]
+//            return AstHelper.createVariableReference(nameAndType)
+//        }
+//        new VariableExpressionReplacer(when: whenParam, replaceWith: replaceWithLocalVariable).replaceIn(root)
         replaceAccessToParams(root)
     }
 
