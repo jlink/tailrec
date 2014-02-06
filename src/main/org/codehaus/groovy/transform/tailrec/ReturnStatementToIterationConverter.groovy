@@ -87,8 +87,8 @@ class ReturnStatementToIterationConverter {
         expression.class in [MethodCallExpression, StaticMethodCallExpression]
     }
 
-    private Set<String> replaceAllArgUsages(List<ExpressionStatement> iterationVariablesAssignmentNodes, Map tempMapping) {
-        Set<String> unusedTempNames = tempMapping.values().collect {Map nameAndType -> nameAndType['name']} as Set<String>
+    private Set<String> replaceAllArgUsages(List<ExpressionStatement> iterationVariablesAssignmentNodes, Map<String, Map> tempMapping) {
+        Set<String> unusedTempNames = tempMapping.values().collect {Map nameAndType -> (String) nameAndType['name']} as Set<String>
         VariableReplacedListener tracker = new UsedVariableTracker()
         for (ExpressionStatement statement : iterationVariablesAssignmentNodes) {
             replaceArgUsageByTempUsage((BinaryExpression) statement.expression, tempMapping, tracker)
