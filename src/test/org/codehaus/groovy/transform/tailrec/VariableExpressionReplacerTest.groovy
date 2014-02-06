@@ -85,6 +85,17 @@ class VariableExpressionReplacerTest {
         assertReplace(createStatement, accessExpression)
     }
 
+    @Test
+    public void replaceOnlyRightExpressionInBinaryExpression() {
+        def toReplace = aVariable("old")
+        def replacement = aVariable("new")
+        def binaryExpression = new BinaryExpression(toReplace, EQUALS, toReplace)
+        replacements[toReplace] = replacement
+        replacer.replaceIn(binaryExpression)
+        assert binaryExpression.rightExpression == replacement
+        assert binaryExpression.leftExpression == toReplace
+    }
+
     private void assertReplace(Closure<Statement> createStatement, Closure<Expression> accessExpression) {
         def toReplace = aVariable("old")
         toReplace.lineNumber = 42
