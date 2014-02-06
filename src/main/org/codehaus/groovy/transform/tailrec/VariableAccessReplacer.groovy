@@ -24,7 +24,7 @@ import org.codehaus.groovy.ast.expr.VariableExpression
  * The variable names to replace as well as their replacement name and type have to be configured
  * in nameAndTypeMapping before calling replaceIn().
  *
- * The closure replaceBy can be changed if clients want to do more in case of replacement.
+ * The VariableReplacedListener can be set if clients want to react to variable replacement.
  *
  * @author Johannes Link
  */
@@ -32,9 +32,8 @@ import org.codehaus.groovy.ast.expr.VariableExpression
 class VariableAccessReplacer {
 
     Map<String, Map> nameAndTypeMapping = [:] //e.g.: ['varToReplace': [name: 'newVar', type: TypeOfVar]]
-    Closure<VariableExpression> replaceBy = { Map nameAndType -> AstHelper.createVariableReference(nameAndType) }
 
-//    VariableReplacedListener listener = {VariableExpression oldVar, VariableExpression newVar ->} as VariableReplacedListener
+    VariableReplacedListener listener = VariableReplacedListener.NULL
 
     void replaceIn(ASTNode root) {
         Closure<Boolean> whenParam = { VariableExpression expr ->
@@ -42,14 +41,23 @@ class VariableAccessReplacer {
         }
         Closure<VariableExpression> replaceWithLocalVariable = { VariableExpression expr ->
             Map nameAndType = nameAndTypeMapping[expr.name]
-            return replaceBy(nameAndType)
+            VariableExpression newVar = AstHelper.createVariableReference(nameAndType)
+            listener.variableReplaced(expr, newVar)
+            return newVar
         }
         new VariableExpressionReplacer(when: whenParam, replaceWith: replaceWithLocalVariable).replaceIn(root)
     }
 
 }
 
-//@CompileStatic
-//interface VariableReplacedListener {
-//    void variableReplaced(VariableExpression oldVar, VariableExpression newVar)
-//}
+@CompileStatic
+interface VariableReplacedListener {
+    void variableReplaced(VariableExpression oldVar, VariableExpression newVar)
+
+    static VariableReplacedListener NULL = new VariableReplacedListener() {
+        @Override
+        void variableReplaced(VariableExpression oldVar, VariableExpression newVar) {
+            //do nothing
+        }
+    }
+}
