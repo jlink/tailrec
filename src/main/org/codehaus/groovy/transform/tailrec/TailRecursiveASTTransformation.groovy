@@ -60,12 +60,20 @@ class TailRecursiveASTTransformation extends AbstractASTTransformation {
         }
 
         if (hasAnnotation(method, ClassHelper.make(Memoized))) {
-            addError("Annotation " + MY_TYPE_NAME + " is incompatible with @Memoized. Remove one of them.", method)
-            return
+            ClassNode memoizedClassNode = ClassHelper.make(Memoized)
+            for (AnnotationNode annotationNode in method.annotations) {
+                if (annotationNode.classNode == MY_TYPE)
+                    break
+                if (annotationNode.classNode == memoizedClassNode) {
+                    addError("Annotation " + MY_TYPE_NAME + " must be placed before annotation @Memoized.", annotationNode)
+                    return
+                }
+            }
         }
 
         if (!hasRecursiveMethodCalls(method)) {
-            addError("No recursive calls detected. You must remove annotation " + MY_TYPE_NAME + ".", method)
+            AnnotationNode annotationNode = method.getAnnotations(ClassHelper.make(TailRecursive))[0]
+            addError("No recursive calls detected. You must remove annotation " + MY_TYPE_NAME + ".", annotationNode)
             return;
         }
 

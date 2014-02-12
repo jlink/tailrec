@@ -95,8 +95,9 @@ class TailRecursiveCompilationFailuresTest extends GroovyShellTestCase {
         """) }
     }
 
-    void testMemoizedIsIncompatibleWithTailRecursive() {
-        shouldFail(CompilationFailedException) {evaluate("""
+    void testTailRecursiveAsFirstAnnotationIsIncompatibleWithMemoized() {
+        shouldFail(CompilationFailedException) {
+            evaluate("""
             import groovy.transform.TailRecursive
             import groovy.transform.Memoized
 
@@ -110,7 +111,8 @@ class TailRecursiveCompilationFailuresTest extends GroovyShellTestCase {
             	}
             }
             new TargetClass()
-        """)}
+        """)
+        }
     }
 
 

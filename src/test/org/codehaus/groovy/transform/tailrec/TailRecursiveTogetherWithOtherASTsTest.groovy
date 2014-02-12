@@ -109,4 +109,30 @@ class TailRecursiveTogetherWithOtherASTsTest extends GroovyShellTestCase {
         assert target.fillString(10000, "") == "+" * 10000
     }
 
+    void testTailRecursiveFirstWorksWithMemoized() {
+        def target = evaluate("""
+            import groovy.transform.Memoized
+            import groovy.transform.TailRecursive
+
+            class TargetClass {
+                int countActualInvocations = 0
+            	@TailRecursive
+                @Memoized
+            	int countDown(int zahl) {
+            		if (zahl == 0) {
+            		    countActualInvocations++
+            			return zahl
+            	    }
+            		return countDown(zahl - 1)
+            	}
+            }
+            new TargetClass()
+        """)
+
+        assert target.countDown(10) == 0
+        assert target.countActualInvocations == 1
+        assert target.countDown(10) == 0
+        assert target.countActualInvocations == 1
+    }
+
 }

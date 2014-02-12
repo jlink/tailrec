@@ -1,5 +1,4 @@
 TODO:
-- make really work with @Memoized
 - Groovy-Documentation
 - Exclude parameters that are just "reentered" into recursive call from copying to local var
 - Maybe there is a way to make CPS work (with currying all local vars into closures?)
