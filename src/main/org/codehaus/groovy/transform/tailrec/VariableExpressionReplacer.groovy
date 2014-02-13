@@ -77,50 +77,42 @@ class VariableExpressionReplacer extends CodeVisitorSupport {
         super.visitBinaryExpression(expression)
     }
 
-    //todo: test
     public void visitWhileLoop(WhileStatement loop) {
         replaceExpressionPropertyWhenNecessary(loop, 'booleanExpression', BooleanExpression)
         super.visitWhileLoop(loop);
     }
 
-    //todo: test
     public void visitDoWhileLoop(DoWhileStatement loop) {
         replaceExpressionPropertyWhenNecessary(loop, 'booleanExpression', BooleanExpression)
         super.visitDoWhileLoop(loop);
     }
 
-    //todo: test
     public void visitSwitch(SwitchStatement statement) {
         replaceExpressionPropertyWhenNecessary(statement)
         super.visitSwitch(statement)
     }
 
-    //todo: test
     public void visitCaseStatement(CaseStatement statement) {
         replaceExpressionPropertyWhenNecessary(statement)
         super.visitCaseStatement(statement)
     }
 
-    //todo: test
     public void visitExpressionStatement(ExpressionStatement statement) {
         replaceExpressionPropertyWhenNecessary(statement)
         super.visitExpressionStatement(statement);
     }
 
-    //todo: test
     public void visitThrowStatement(ThrowStatement statement) {
         replaceExpressionPropertyWhenNecessary(statement)
         super.visitThrowStatement(statement)
     }
 
-    //todo: test
     public void visitAssertStatement(AssertStatement statement) {
         replaceExpressionPropertyWhenNecessary(statement, 'booleanExpression', BooleanExpression)
-        replaceExpressionPropertyWhenNecessary(statement, 'messageExpression', BooleanExpression)
+        replaceExpressionPropertyWhenNecessary(statement, 'messageExpression')
         super.visitAssertStatement(statement)
     }
 
-    //todo: test
     public void visitSynchronizedStatement(SynchronizedStatement statement) {
         replaceExpressionPropertyWhenNecessary(statement)
         super.visitSynchronizedStatement(statement)
